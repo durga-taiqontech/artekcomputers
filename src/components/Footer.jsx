@@ -24,6 +24,7 @@ export default function Footer() {
         <div>
           <p>+971 4 379 7128 / 7138</p>
           <p>+971 50 223 6842</p>
+          <a className="foot-link" href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" aria-label="Company profile (PDF, opens in a new tab)">Download our company profile (PDF)</a>
         </div>
         <div>
           <p>info@artekteam.com</p>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa'
+import { FaWhatsapp } from 'react-icons/fa'
 import { WHATSAPP } from '../constants'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
@@ -41,6 +41,13 @@ const SERVICE_BY_SLUG = {
 const MAPS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
   'Artek Computers LLC Computer Street Bur Dubai',
 )}`
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact Artek Computers LLC',
+  url: 'https://artekcomputer.com/contact',
+}
 
 const initial = { name: '', phone: '', email: '', service: '', message: '' }
 
@@ -102,9 +109,10 @@ export default function Contact() {
   return (
     <section className="contact">
       <Seo
-        title="Contact Artek Computers LLC | IT & CCTV Company in Bur Dubai"
-        description="Call, email or visit Artek Computers LLC on Computer Street, Bur Dubai. Free site survey and clear quotes for CCTV, IT and ELV projects."
+        title="Contact Artek Computers LLC | IT and CCTV Company in Dubai"
+        description="Call +971 4 379 7128 or send an enquiry to Artek Computers LLC, Computer Street, Bur Dubai. Free consultation for IT, networking, CCTV and support."
         path="/contact"
+        jsonLd={jsonLd}
       />
       <div className="wrap">
         <div className="contact-in">
@@ -171,6 +179,7 @@ export default function Contact() {
             <button className="btn blue" type="submit" disabled={status === 'sending'}>
               {status === 'sending' ? 'Sending…' : 'Send enquiry'}
             </button>
+            <p className="form-note">We reply within one working day.</p>
             {status === 'sent' && (
               <p className="ok" role="status">Thanks, we&apos;ll call you back within one working day.</p>
             )}
@@ -178,9 +187,13 @@ export default function Contact() {
         </div>
 
         <div className="map-card">
-          <div className="map-canvas" aria-hidden="true">
-            <FaMapMarkerAlt className="map-pin" />
-          </div>
+          <iframe
+            className="map-frame"
+            src="https://www.google.com/maps?q=Artek+Computers+LLC+Computer+Street+Bur+Dubai&output=embed"
+            title="Map showing Artek Computers LLC on Computer Street, Bur Dubai"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
           <div className="map-foot">
             <p>Artek Computers LLC, P.O Box 112280, Al Rafa Road, Computer Street, Bur Dubai, Dubai, UAE</p>
             <a href={MAPS_LINK} target="_blank" rel="noreferrer">Get directions</a>

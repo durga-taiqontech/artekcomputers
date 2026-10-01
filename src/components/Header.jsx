@@ -109,10 +109,13 @@ export default function Header() {
           <li><NavLink to="/products" onClick={close}>Products</NavLink></li>
           <li><a href="#" onClick={close}>Blog</a></li>
           <li><NavLink to="/contact" onClick={close}>Contact Us</NavLink></li>
+          <li className="menu-profile">
+            <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" onClick={close} aria-label="Company profile (PDF, opens in a new tab)">Company profile (PDF)</a>
+          </li>
         </ul>
 
         <div className="bar-cta">
-          <a href="#" className="ghost">Profile</a>
+          <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" className="ghost" aria-label="Company profile (PDF, opens in a new tab)">Profile</a>
           <Link to="/contact" className="btn blue">Enquiry</Link>
         </div>
       </nav>
