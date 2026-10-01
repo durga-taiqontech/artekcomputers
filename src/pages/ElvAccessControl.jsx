@@ -109,32 +109,32 @@ export default function ElvAccessControl() {
             mobile credentials and centralised management for complete facility security.
           </p>
           <div className="ac-grid">
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaFingerprint aria-hidden="true" />
               <h3>Biometric access control in Dubai</h3>
               <p>Fingerprint, facial recognition and iris scanning for restricted areas.</p>
             </div>
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaIdCard aria-hidden="true" />
               <h3>Card-based systems</h3>
               <p>RFID proximity and smart cards with encrypted credentials.</p>
             </div>
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaMobileAlt aria-hidden="true" />
               <h3>Mobile access</h3>
               <p>Smartphone entry using Bluetooth and NFC.</p>
             </div>
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaUserClock aria-hidden="true" />
               <h3>Time attendance integration</h3>
               <p>Automated employee tracking tied into your access control.</p>
             </div>
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaIdBadge aria-hidden="true" />
               <h3>Visitor management</h3>
               <p>Check-in, badge printing and temporary credentials for visitors and contractors.</p>
             </div>
-            <div className="ac-card">
+            <div className="ac-card hover-card">
               <FaProjectDiagram aria-hidden="true" />
               <h3>System integration</h3>
               <p>Works with CCTV, alarms and building management systems.</p>

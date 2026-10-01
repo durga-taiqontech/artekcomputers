@@ -10,6 +10,13 @@ const proof = [
   'Residential to corporate',
   'Computer Street, Bur Dubai',
 ]
+const glance = [
+  'Established in the United Arab Emirates',
+  'IT integrated systems company',
+  'Residential to corporate customers',
+  'Authorized dealer of leading brands',
+  'Computer Street, Bur Dubai',
+]
 
 const mission = [
   'To contribute outstanding value to clients, employees, vendors and society at large.',
@@ -74,7 +81,7 @@ export default function Company() {
       </section>
 
       <section className="about" aria-labelledby="about-h">
-        <div className="wrap">
+        <div className="wrap about-cols">
           <div className="prose">
             <h2 id="about-h">Who we are</h2>
             <p>
@@ -91,6 +98,17 @@ export default function Company() {
               to a company like yours.
             </p>
           </div>
+          <div className="glance-card hover-card">
+            <h3>At a glance</h3>
+            <ul>
+              {glance.map((item) => (
+                <li key={item}>
+                  <FaCheck aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -98,13 +116,13 @@ export default function Company() {
         <div className="wrap">
           <h2 id="mv-h" className="sr-only">Mission and vision</h2>
           <div className="vm-grid">
-            <div className="vm-card">
+            <div className="vm-card hover-card">
               <h3>Our mission</h3>
               <ul>
                 {mission.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </div>
-            <div className="vm-card">
+            <div className="vm-card hover-card">
               <h3>Our vision</h3>
               <p>
                 To be a respected and agile corporation that continuously enhances the value we provide through

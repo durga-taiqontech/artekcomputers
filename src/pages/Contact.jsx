@@ -51,19 +51,83 @@ const jsonLd = {
 
 const initial = { name: '', phone: '', email: '', service: '', message: '' }
 
-// Single submit path: swap this for a real API later, the form will not change.
+// Web3Forms key comes from the VITE_WEB3FORMS_KEY env var. Never hardcoded, never logged.
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || ''
+
+const PHONE_INVALID = 'Please enter a valid UAE phone number, for example +971 4 379 7128 or +971 50 223 6842.'
+
+// Strips spaces/dashes/brackets and one pasted +971 / 00971 / leading 0. May keep letters; validation rejects them.
+function uaeDigits(raw) {
+  let s = String(raw).replace(/[\s\-()]/g, '')
+  if (s.startsWith('+971')) s = s.slice(4)
+  else if (s.startsWith('00971')) s = s.slice(5)
+  else if (s.startsWith('0')) s = s.slice(1)
+  return s
+}
+
+// Mobile: 5 + 8 digits (9 total). Landline: area 2/3/4/6/7/9 + 7 digits (8 total).
+const isUaeMobile = (d) => /^5\d{8}$/.test(d)
+const isUaeLandline = (d) => /^[234679]\d{7}$/.test(d)
+const isUaeNumber = (d) => isUaeMobile(d) || isUaeLandline(d)
+
+// Progressive grouping: mobile 2-3-4 ("50 223 6842"), landline 1-3-4 ("4 379 7128").
+function formatUae(digits) {
+  if (!digits) return ''
+  const groups = digits[0] === '5' ? [2, 3, 4] : [1, 3, 4]
+  const parts = []
+  let i = 0
+  for (const g of groups) {
+    if (i >= digits.length) break
+    parts.push(digits.slice(i, i + g))
+    i += g
+  }
+  if (i < digits.length) parts.push(digits.slice(i))
+  return parts.join(' ')
+}
+
+// Single submit path: Web3Forms when a key is configured, mailto fallback otherwise.
 async function sendEnquiry(data) {
-  const body = `Name: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nService: ${data.service}\n\n${data.message}`
-  window.location.href = `mailto:info@artekteam.com?subject=${encodeURIComponent(
-    `Website enquiry — ${data.service}`,
-  )}&body=${encodeURIComponent(body)}`
+  if (import.meta.env.DEV) console.log('[enquiry] web3forms key found:', Boolean(WEB3FORMS_KEY))
+  let delivered = false
+  if (WEB3FORMS_KEY) {
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Website enquiry — ${data.service}`,
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          service: data.service,
+          message: data.message,
+        }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (import.meta.env.DEV) {
+        console.log(`[enquiry] web3forms response: status=${res.status} message=${JSON.stringify(json.message ?? null)}`)
+      }
+      delivered = res.ok && json.success === true
+    } catch (err) {
+      if (import.meta.env.DEV) console.log('[enquiry] web3forms request failed: ' + (err && err.message))
+    }
+  }
+  if (!delivered) {
+    const body = `Name: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nService: ${data.service}\n\n${data.message}`
+    window.location.href = `mailto:info@artekteam.com?subject=${encodeURIComponent(
+      `Website enquiry — ${data.service}`,
+    )}&body=${encodeURIComponent(body)}`
+  }
+  if (import.meta.env.DEV) console.log('[enquiry] mailto fallback used:', !delivered)
+  return delivered
 }
 
 function validate(f) {
   const errs = {}
   if (!f.name.trim()) errs.name = 'Please enter your full name.'
   if (!f.phone.trim()) errs.phone = 'Please enter a phone number we can call you on.'
-  else if (f.phone.replace(/\D/g, '').length < 7) errs.phone = 'Please enter a valid phone number, at least 7 digits long.'
+  else if (!isUaeNumber(uaeDigits(f.phone))) errs.phone = PHONE_INVALID
   if (!f.email.trim()) errs.email = 'Please enter your email address.'
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) errs.email = 'Please enter a valid email address, like name@company.com.'
   if (!f.service) errs.service = 'Please choose the service you need.'
@@ -84,6 +148,27 @@ export default function Contact() {
     if (errors[key]) setErrors({ ...errors, [key]: undefined })
   }
 
+  // Formats as the visitor types and keeps the caret stable across the reformat.
+  const setPhone = (e) => {
+    const el = e.target
+    const caret = el.selectionStart ?? el.value.length
+    const digitsBefore = el.value.slice(0, caret).replace(/\D/g, '').length
+    const digits = uaeDigits(el.value).replace(/\D/g, '')
+    const next = formatUae(digits)
+    setF({ ...f, phone: next })
+    if (errors.phone) setErrors({ ...errors, phone: undefined })
+    requestAnimationFrame(() => {
+      const target = Math.min(digitsBefore, digits.length)
+      let seen = 0
+      let pos = 0
+      while (pos < next.length && seen < target) {
+        if (/\d/.test(next[pos])) seen++
+        pos++
+      }
+      el.setSelectionRange(pos, pos)
+    })
+  }
+
   async function submit(e) {
     e.preventDefault()
     const errs = validate(f)
@@ -94,7 +179,7 @@ export default function Contact() {
     }
     const payload = {
       name: f.name.trim(),
-      phone: f.phone.trim(),
+      phone: `+971${uaeDigits(f.phone).replace(/\D/g, '')}`,
       email: f.email.trim(),
       service: f.service,
       message: f.message.trim(),
@@ -151,7 +236,20 @@ export default function Contact() {
             <div className="two">
               <div className="field">
                 <label htmlFor="phone">Phone</label>
-                <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" value={f.phone} onChange={set('phone')} {...aria('phone', errors.phone)} />
+                <div className="phone-wrap">
+                  <span className="phone-prefix" aria-hidden="true">+971</span>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder="50 223 6842"
+                    value={f.phone}
+                    onChange={setPhone}
+                    {...aria('phone', errors.phone)}
+                  />
+                </div>
                 {errors.phone && <p className="err" id="phone-err">{errors.phone}</p>}
               </div>
               <div className="field">
@@ -179,9 +277,9 @@ export default function Contact() {
             <button className="btn blue" type="submit" disabled={status === 'sending'}>
               {status === 'sending' ? 'Sending…' : 'Send enquiry'}
             </button>
-            <p className="form-note">We reply within one working day.</p>
+            <p className="form-note">We will call you back within 1 hour during working hours.</p>
             {status === 'sent' && (
-              <p className="ok" role="status">Thanks, we&apos;ll call you back within one working day.</p>
+              <p className="ok" role="status">Thanks, we have received your enquiry. We will call you back within 1 hour during working hours.</p>
             )}
           </form>
         </div>

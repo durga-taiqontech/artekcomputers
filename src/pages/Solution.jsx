@@ -123,7 +123,7 @@ function SolutionPage({ solution }) {
             <p className="intro">{page.offer.intro}</p>
             <div className="ac-grid">
               {page.offer.items.map((item) => (
-                <div className="ac-card" key={item.title}>
+                <div className="ac-card hover-card" key={item.title}>
                   <item.icon aria-hidden="true" />
                   <h3>{item.title}</h3>
                   <p>{item.text}</p>

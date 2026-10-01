@@ -134,7 +134,7 @@ export default function Products() {
           <h2 id="prod-h">What we supply and support</h2>
           <div className="ac-grid">
             {categories.map((c) => (
-              <div key={c.slug} className="ac-card prod">
+              <div key={c.slug} className="ac-card prod hover-card">
                 <c.icon aria-hidden="true" />
                 <h3>{c.title}</h3>
                 <p>{c.text}</p>

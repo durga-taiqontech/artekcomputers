@@ -246,14 +246,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       <section className="serve" aria-labelledby="serve-h">
         <div className="wrap">
           <h2 id="serve-h">Who we serve</h2>
           <div className="ac-grid">
             {serve.map((s) => (
-              <div className="ac-card" key={s.title}>
-                <s.icon aria-hidden="true" />
+              <div className="ac-card hover-card" key={s.title}>
+                <s.icon className="chip" aria-hidden="true" />
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
               </div>

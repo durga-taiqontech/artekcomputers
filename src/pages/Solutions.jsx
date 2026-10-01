@@ -28,7 +28,7 @@ export default function Solutions() {
           <h2 id="sol-h" className="sr-only">Our solutions</h2>
           <div className="ac-grid">
             {solutions.map((s) => (
-              <div className="ac-card prod" key={s.slug}>
+              <div className="ac-card prod hover-card" key={s.slug}>
                 <h3>{s.title}</h3>
                 <p>{s.blurb}</p>
                 <div className="card-links">
