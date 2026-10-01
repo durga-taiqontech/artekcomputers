@@ -7,7 +7,7 @@ const SITE = 'https://artekcomputer.com'
  * creating any tag that is missing. Optionally injects JSON-LD structured
  * data, removed again on unmount.
  */
-export default function Seo({ title, description, path, jsonLd }) {
+export default function Seo({ title, description, path, jsonLd, image }) {
   useEffect(() => {
     document.title = title
     const url = `${SITE}${path}`
@@ -27,6 +27,10 @@ export default function Seo({ title, description, path, jsonLd }) {
     setMeta('property', 'og:description', description)
     setMeta('property', 'og:type', 'website')
     setMeta('property', 'og:url', url)
+    if (image) {
+      setMeta('property', 'og:image', image)
+      setMeta('name', 'twitter:image', image)
+    }
 
     let canonical = document.head.querySelector('link[rel="canonical"]')
     if (!canonical) {
@@ -46,7 +50,7 @@ export default function Seo({ title, description, path, jsonLd }) {
     return () => {
       scripts.forEach((script) => script.remove())
     }
-  }, [title, description, path, jsonLd])
+  }, [title, description, path, jsonLd, image])
 
   return null
 }

@@ -45,6 +45,7 @@ export const solutions = [
     title: 'CCTV & Security',
     blurb: 'SIRA-compliant CCTV design, supply and installation, with Dubai Police approval handled end to end.',
     page: {
+      imageAlt: 'Technician installing a CCTV camera on a building wall',
       contactValue: 'cctv-security',
       seo: {
         title: 'SIRA Approved CCTV Installation in Dubai | Artek Computers LLC',
@@ -101,6 +102,7 @@ export const solutions = [
     title: 'IT Services',
     blurb: 'Managed IT support, AMC contracts and onsite helpdesk cover for businesses across Dubai.',
     page: {
+      imageAlt: 'IT engineer supporting a user at an office desk',
       contactValue: 'it-services',
       seo: {
         title: 'IT Service Provider in Dubai | IT Support, Audit and Outsourcing | Artek Computers LLC',
@@ -156,6 +158,7 @@ export const solutions = [
     title: 'Network Solutions',
     blurb: 'Structured cabling, switching, fibre optics and office Wi-Fi design and installation.',
     page: {
+      imageAlt: 'Structured network cabling connected to a patch panel',
       contactValue: 'network-solutions',
       seo: {
         title: 'Network Solutions and Structured Cabling in Dubai | Artek Computers LLC',
@@ -211,6 +214,7 @@ export const solutions = [
     title: 'Cybersecurity & VAPT',
     blurb: 'Firewalls, endpoint protection, threat detection, security audits and vulnerability assessment.',
     page: {
+      imageAlt: 'Security analysts reviewing network activity in a control room',
       contactValue: 'cybersecurity',
       seo: {
         title: 'Cybersecurity Solutions in Dubai | Firewalls, Endpoint Protection and IT Audit | Artek Computers LLC',
@@ -266,6 +270,7 @@ export const solutions = [
     title: 'Cloud Computing',
     blurb: 'Cloud migration, storage, backup and SaaS implementation for growing businesses.',
     page: {
+      imageAlt: 'Server racks in a data center',
       contactValue: 'cloud-computing',
       seo: {
         title: 'Cloud Computing Services in Dubai | Public, Private and Hybrid Cloud | Artek Computers LLC',
@@ -320,6 +325,7 @@ export const solutions = [
     title: 'Microsoft Solutions',
     blurb: 'Microsoft 365, Azure and licensing, deployed and migrated for you.',
     page: {
+      imageAlt: 'Team collaborating on laptops in a modern office',
       contactValue: 'microsoft-solutions',
       seo: {
         title: 'Microsoft Licensing and Solutions in Dubai | Artek Computers LLC',
@@ -373,6 +379,7 @@ export const solutions = [
     title: 'Computer Systems',
     blurb: 'Workstations, servers and POS hardware supplied and configured.',
     page: {
+      imageAlt: 'Person typing on a laptop at a desk',
       contactValue: 'computer-systems',
       seo: {
         title: 'Computer Systems, Laptops and Servers in Dubai | Artek Computers LLC',
@@ -428,6 +435,7 @@ export const solutions = [
     title: 'Voice & Telephony',
     blurb: 'IP PBX and business phone systems, installed and maintained.',
     page: {
+      imageAlt: 'Call center team wearing headsets at their desks',
       contactValue: 'voice-telephony',
       seo: {
         title: 'IP Telephony and PBX Systems in Dubai | Artek Computers LLC',
@@ -481,6 +489,7 @@ export const solutions = [
     title: 'Data Center Relocation',
     blurb: 'Server room and rack moves, planned for zero downtime.',
     page: {
+      imageAlt: 'Engineers working beside server racks in a data center',
       contactValue: 'data-center-relocation',
       seo: {
         title: 'Data Center and Server Relocation in Dubai | Artek Computers LLC',

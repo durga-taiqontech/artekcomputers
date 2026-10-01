@@ -5,6 +5,13 @@ import Breadcrumbs from '../components/Breadcrumbs'
 import { solutions } from '../data/solutions'
 import { PHONE, PHONE_LINK } from '../constants'
 
+// Solution photos live in src/assets/solutions/<slug>.<ext>; missing slug = no photo.
+const IMAGE_BY_SLUG = Object.fromEntries(
+  Object
+    .entries(import.meta.glob('../assets/solutions/*.{jpg,jpeg,webp,png}', { eager: true, import: 'default' }))
+    .map(([file, url]) => [file.split('/').pop().replace(/\.[^.]+$/, ''), url]),
+)
+
 const ORG = {
   '@type': 'Organization',
   name: 'Artek Computers LLC',
@@ -65,6 +72,7 @@ function ComingSoon({ solution }) {
 function SolutionPage({ solution }) {
   const { page } = solution
   const contactHref = `/contact?service=${page.contactValue}`
+  const image = IMAGE_BY_SLUG[solution.slug]
 
   const jsonLd = [
     {
@@ -91,7 +99,7 @@ function SolutionPage({ solution }) {
 
   return (
     <>
-      <Seo title={page.seo.title} description={page.seo.description} path={`/solutions/${solution.slug}`} jsonLd={jsonLd} />
+      <Seo title={page.seo.title} description={page.seo.description} path={`/solutions/${solution.slug}`} jsonLd={jsonLd} image={image ? `https://artekcomputer.com${image}` : undefined} />
 
       <section className="hero-band">
         <div className="wrap">
@@ -131,6 +139,11 @@ function SolutionPage({ solution }) {
           <div className="wrap split">
             <div>
               <h2 id="feature-h">{page.feature.h2}</h2>
+              {image && (
+                <figure className="sol-photo">
+                  <img src={image} alt={page.imageAlt} loading="lazy" decoding="async" width="800" height="500" style={{ objectPosition: page.imagePosition || 'center' }} />
+                </figure>
+              )}
               <p className="body-p">{page.feature.p1}</p>
               <p className="body-p">{page.feature.p2}</p>
             </div>
