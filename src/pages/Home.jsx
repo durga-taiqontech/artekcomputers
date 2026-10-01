@@ -70,6 +70,11 @@ const solutions = [
     text: 'Cloud migration, backup and storage.',
     cls: 'cloud',
     slug: 'cloud-computing',
+    check: [
+      'Public, private and hybrid cloud',
+      'Cloud integration with your systems',
+      'Outsourced helpdesk and infrastructure management',
+    ],
   },
   {
     icon: FaTools,
@@ -138,6 +143,24 @@ const orgJsonLd = {
   areaServed: 'United Arab Emirates',
 }
 
+const faqs = [
+  { q: 'What does Artek Computers do?', a: 'Artek Computers LLC is an IT integrated systems company. We supply and support computers, networks, CCTV, cabling, telephony and cloud services for customers from residential to corporate.' },
+  { q: 'Where are you based?', a: 'On Computer Street, Bur Dubai, and we serve businesses across the UAE.' },
+  { q: 'Are you an authorized dealer of the brands you supply?', a: 'We are an authorized distributor and dealer of leading IT and telecommunications brands. See the list above.' },
+  { q: 'Can you handle CCTV, networking and IT support together?', a: 'Yes. One team plans, installs and supports all of them, so your systems work together.' },
+  { q: 'How do I get a quote?', a: 'Call +971 4 379 7128 or send an enquiry. We will ask about your site and requirements, then quote clearly.' },
+]
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+ }
+
 export default function Home() {
   const location = useLocation()
 
@@ -153,7 +176,7 @@ export default function Home() {
         title="IT Solutions, CCTV and Networking in Dubai | Artek Computers LLC"
         description="Artek Computers LLC is an IT integrated systems company in Dubai: computers, networking, CCTV, cabling, cloud, telephony and support for customers from residential to corporate."
         path="/"
-        jsonLd={orgJsonLd}
+        jsonLd={[orgJsonLd, faqJsonLd]}
       />
       <section className="hero">
         <div className="wrap">
@@ -235,6 +258,32 @@ export default function Home() {
                 <p>{s.text}</p>
               </div>
             ))}
+          </div>
+          <p className="serve-note">Based on Computer Street, Bur Dubai, and serving businesses across Dubai, Abu Dhabi and the UAE.</p>
+        </div>
+      </section>
+
+      <section className="faq-sec" aria-labelledby="faq-h">
+        <div className="wrap">
+          <h2 id="faq-h">Common questions</h2>
+          <div className="faq">
+            {faqs.map((f) => (
+              <details key={f.q}>
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="closing">
+        <div className="wrap">
+          <h2>Ready to talk about your IT or security needs?</h2>
+          <p>Call us or send an enquiry. We will recommend the right solution and quote clearly.</p>
+          <div className="hero-btns">
+            <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
+            <Link className="btn outline" to="/contact">Request a free quote</Link>
           </div>
         </div>
       </section>

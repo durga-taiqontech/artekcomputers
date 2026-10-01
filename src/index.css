@@ -74,9 +74,8 @@ h2{font-size:clamp(26px,3.2vw,38px);margin-bottom:28px;max-width:20ch}
 .bt h3{font-size:19px;margin-top:14px}
 .bt p{font-size:14.5px;color:var(--mute)}
 .bt.feature{grid-column:span 2;grid-row:span 2;background:var(--blue-d);border-color:var(--blue-d);color:#fff}
-.bt.feature>svg{font-size:44px;color:#fff}.bt.feature h3{font-size:32px}.bt.feature p{color:#e3f1ff;font-size:16px;max-width:36ch}
-.bt.feature .check{margin-top:16px;display:grid;gap:9px;font-size:15px;color:#eaf4ff}
-.bt.feature .check svg{font-size:12px;color:#cfe8ff;margin-right:9px}
+.bt.feature .check,.bt.cloud .check{margin-top:16px;display:grid;gap:9px;font-size:15px;color:#eaf4ff}
+.bt.feature .check svg,.bt.cloud .check svg{font-size:12px;color:#cfe8ff;margin-right:9px}
 .bt.wide{grid-column:span 2;background:var(--ink2);border-color:var(--ink2);color:#fff}
 .bt.wide p{color:#b7c3d6}
 .bt.cloud{grid-column:span 2;grid-row:span 2;background:var(--ink2);border-color:var(--ink2);color:#fff}
@@ -271,6 +270,7 @@ footer p{margin-top:4px}
 .serve .ac-card{min-height:0;transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s cubic-bezier(.2,.7,.2,1),border-color .2s cubic-bezier(.2,.7,.2,1)}
 .serve .ac-card svg{width:44px;height:44px;padding:11px;border-radius:12px;background:rgba(27,139,224,.10);color:var(--blue);transition:background-color .2s cubic-bezier(.2,.7,.2,1),color .2s cubic-bezier(.2,.7,.2,1)}
 .serve .ac-card h3::after{content:'';display:block;width:0;height:2px;margin-top:8px;background:var(--blue);transition:width .2s cubic-bezier(.2,.7,.2,1)}
+.serve-note{margin-top:26px;color:var(--mute);font-size:15.5px}
 .brand-pills span{transition:transform .2s cubic-bezier(.2,.7,.2,1),opacity .2s cubic-bezier(.2,.7,.2,1),background-color .2s cubic-bezier(.2,.7,.2,1),border-color .2s cubic-bezier(.2,.7,.2,1),color .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s cubic-bezier(.2,.7,.2,1)}
 @media (hover:hover) and (pointer:fine){
   .serve .ac-card:hover,.serve .ac-card:focus-within{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 14px 30px rgba(11,20,36,.10)}
