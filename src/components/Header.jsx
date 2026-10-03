@@ -2,34 +2,51 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import mark from '../assets/logo-mark.png'
 import { solutions } from '../data/solutions'
+import { productGroups, slugify } from '../data/catalog'
+
+// Mega-menu columns: the first three groups stand alone, the remaining groups
+// stack in the fourth column so the column heights stay similar.
+const [first, second, third, ...rest] = productGroups
+const megaColumns = [[first], [second], [third], rest].filter((col) => col[0])
 
 export default function Header() {
   const [open, setOpen] = useState(false)
   const [subOpen, setSubOpen] = useState(false)
-  const [clickClosed, setClickClosed] = useState(false)
+  const [subClickClosed, setSubClickClosed] = useState(false)
+  const [megaOpen, setMegaOpen] = useState(false)
+  const [megaClickClosed, setMegaClickClosed] = useState(false)
   const subRef = useRef(null)
+  const megaRef = useRef(null)
   const close = () => setOpen(false)
   const { pathname } = useLocation()
   const [lastPath, setLastPath] = useState(pathname)
   if (lastPath !== pathname) {
     setLastPath(pathname)
     setSubOpen(false)
-    setClickClosed(false)
+    setSubClickClosed(false)
+    setMegaOpen(false)
+    setMegaClickClosed(false)
   }
 
-  // Escape and click-outside close the dropdown.
+  // Escape and click-outside close whichever panel is open.
   useEffect(() => {
-    if (!subOpen) return
+    if (!subOpen && !megaOpen) return
     const onDown = (e) => {
-      if (subRef.current && !subRef.current.contains(e.target)) {
+      if (subOpen && subRef.current && !subRef.current.contains(e.target)) {
         setSubOpen(false)
-        setClickClosed(false)
+        setSubClickClosed(false)
+      }
+      if (megaOpen && megaRef.current && !megaRef.current.contains(e.target)) {
+        setMegaOpen(false)
+        setMegaClickClosed(false)
       }
     }
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setSubOpen(false)
-        setClickClosed(false)
+        setSubClickClosed(false)
+        setMegaOpen(false)
+        setMegaClickClosed(false)
       }
     }
     document.addEventListener('mousedown', onDown)
@@ -38,14 +55,35 @@ export default function Header() {
       document.removeEventListener('mousedown', onDown)
       document.removeEventListener('keydown', onKey)
     }
-  }, [subOpen])
+  }, [subOpen, megaOpen])
 
+  // Opening one panel closes the other.
   const openSub = () => {
-    if (!clickClosed) setSubOpen(true)
+    if (!subClickClosed) {
+      setSubOpen(true)
+      setMegaOpen(false)
+      setMegaClickClosed(false)
+    }
+  }
+  const openMega = () => {
+    if (!megaClickClosed) {
+      setMegaOpen(true)
+      setSubOpen(false)
+      setSubClickClosed(false)
+    }
   }
   const closeSubAfterClick = () => {
     setSubOpen(false)
-    setClickClosed(true)
+    setSubClickClosed(true)
+  }
+  const closeMegaAfterClick = () => {
+    setMegaOpen(false)
+    setMegaClickClosed(true)
+  }
+  const megaLinkClick = (e) => {
+    closeMegaAfterClick()
+    close()
+    e.currentTarget.blur()
   }
 
   return (
@@ -69,7 +107,7 @@ export default function Header() {
             onMouseEnter={openSub}
             onMouseLeave={() => {
               setSubOpen(false)
-              setClickClosed(false)
+              setSubClickClosed(false)
             }}
             onBlur={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget)) setSubOpen(false)
@@ -105,9 +143,60 @@ export default function Header() {
               ))}
             </ul>
           </li>
-          <li><NavLink to="/elv-access-control" onClick={close}>ELV &amp; Access Control</NavLink></li>
-          <li><NavLink to="/products" onClick={close}>Products</NavLink></li>
-          <li><a href="#" onClick={close}>Blog</a></li>
+          <li
+            className={`has-mega${megaOpen ? ' open' : ''}`}
+            ref={megaRef}
+            onMouseEnter={openMega}
+            onMouseLeave={() => {
+              setMegaOpen(false)
+              setMegaClickClosed(false)
+            }}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) setMegaOpen(false)
+            }}
+          >
+            <NavLink
+              to="/products"
+              aria-haspopup="true"
+              aria-expanded={megaOpen}
+              onFocus={openMega}
+              onClick={() => {
+                closeMegaAfterClick()
+                close()
+              }}
+            >
+              Products ▾
+            </NavLink>
+            <div className="mega">
+              <div className="mega-grid">
+                {megaColumns.map((groups, i) => (
+                  <div className="mega-col" key={i}>
+                    {groups.map((g) => (
+                      <div className="mega-group" key={g.slug}>
+                        <Link className="mega-h" to={`/products#${g.slug}`} onClick={megaLinkClick}>{g.title}</Link>
+                        <ul>
+                          {g.items.map((name) => (
+                            <li key={name}>
+                              <Link to={`/products#${slugify(name)}`} onClick={megaLinkClick}>{name}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <Link className="mega-all" to="/products" onClick={megaLinkClick}>View all products</Link>
+            </div>
+            <ul className="sub mega-m">
+              {productGroups.map((g) => (
+                <li key={g.slug}>
+                  <Link to={`/products#${g.slug}`} onClick={close}>{g.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+          <li><NavLink to="/brands" onClick={close}>Brands</NavLink></li>
           <li><NavLink to="/contact" onClick={close}>Contact Us</NavLink></li>
           <li className="menu-profile">
             <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" onClick={close} aria-label="Company profile (PDF, opens in a new tab)">Company profile (PDF)</a>

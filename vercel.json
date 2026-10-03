@@ -1,3 +1,6 @@
 {
+  "redirects": [
+    { "source": "/elv-access-control", "destination": "/solutions/elv-access-control", "permanent": true }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

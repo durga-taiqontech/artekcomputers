@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import {
   FaBuilding,
   FaCheck,
@@ -159,17 +159,9 @@ const faqJsonLd = {
     name: f.q,
     acceptedAnswer: { '@type': 'Answer', text: f.a },
   })),
- }
+}
 
 export default function Home() {
-  const location = useLocation()
-
-  useEffect(() => {
-    if (location.hash) {
-      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [location.hash])
-
   return (
     <>
       <Seo
@@ -244,6 +236,7 @@ export default function Home() {
           <div className="brand-pills">
             {brands.map((brand) => <span key={brand}>{brand}</span>)}
           </div>
+          <p className="brands-more"><Link to="/brands">See all brands</Link></p>
         </div>
       </section>
       <section className="serve" aria-labelledby="serve-h">

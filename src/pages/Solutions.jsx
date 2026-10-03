@@ -18,7 +18,7 @@ export default function Solutions() {
           <Breadcrumbs tone="light" items={[{ name: 'Home', to: '/' }, { name: 'Solutions' }]} />
           <h1>IT and security solutions in Dubai</h1>
           <p className="lead">
-            Nine services from one company, supplied, installed and supported by Artek Computers LLC.
+            Ten services from one company, supplied, installed and supported by Artek Computers LLC.
           </p>
         </div>
       </section>
@@ -26,7 +26,7 @@ export default function Solutions() {
       <section className="sol-sec" aria-labelledby="sol-h">
         <div className="wrap">
           <h2 id="sol-h" className="sr-only">Our solutions</h2>
-          <div className="ac-grid">
+          <div className="sol-grid">
             {solutions.map((s) => (
               <div className="ac-card prod hover-card" key={s.slug}>
                 <h3>{s.title}</h3>

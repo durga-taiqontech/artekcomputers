@@ -7,6 +7,7 @@ import Breadcrumbs from '../components/Breadcrumbs'
 
 const services = [
   'CCTV & Security',
+  'ELV & Access Control',
   'IT Services',
   'Network Solutions',
   'Microsoft Solutions',
@@ -23,8 +24,16 @@ const services = [
   'Other',
 ]
 
-// Maps ?service= slugs from the Products page to select options.
+// Select options: the service names above plus "Products" for catalogue enquiries.
+const serviceOptions = [
+  { value: 'products', label: 'Products' },
+  ...services.map((s) => ({ value: s, label: s })),
+]
+
+// Maps ?service= slugs from the Products and catalogue pages to select values.
 const SERVICE_BY_SLUG = {
+  'elv-access-control': 'ELV & Access Control',
+  products: 'products',
   'cctv-security': 'CCTV & Security',
   networking: 'Network Solutions',
   servers: 'Computer Systems',
@@ -137,8 +146,13 @@ function validate(f) {
 
 export default function Contact() {
   const [searchParams] = useSearchParams()
+  const product = searchParams.get('product')?.trim()
   const preset = SERVICE_BY_SLUG[searchParams.get('service')]
-  const [f, setF] = useState({ ...initial, service: services.includes(preset) ? preset : '' })
+  const [f, setF] = useState({
+    ...initial,
+    service: serviceOptions.some((o) => o.value === preset) ? preset : '',
+    message: product ? `I would like a quote for: ${product}.` : '',
+  })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
   const aria = (key, err) => (err ? { 'aria-invalid': true, 'aria-describedby': `${key}-err` } : {})
@@ -263,7 +277,7 @@ export default function Contact() {
               <label htmlFor="service">Service needed</label>
               <select id="service" name="service" value={f.service} onChange={set('service')} {...aria('service', errors.service)}>
                 <option value="" disabled>Select a service</option>
-                {services.map((s) => <option key={s} value={s}>{s}</option>)}
+                {serviceOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
               {errors.service && <p className="err" id="service-err">{errors.service}</p>}
             </div>

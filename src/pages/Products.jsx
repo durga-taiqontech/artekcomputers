@@ -1,93 +1,22 @@
 import { Link } from 'react-router-dom'
-import {
-  FaCloud,
-  FaDesktop,
-  FaHeadset,
-  FaLaptop,
-  FaMobileAlt,
-  FaNetworkWired,
-  FaPhotoVideo,
-  FaPrint,
-  FaServer,
-  FaShieldAlt,
-} from 'react-icons/fa'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
 import { PHONE, PHONE_LINK } from '../constants'
-
-const categories = [
-  {
-    slug: 'networking',
-    title: 'Networking and network infrastructure',
-    icon: FaNetworkWired,
-    text: 'Routers, switches, Wi-Fi, structured cabling and fibre optic networks, designed and installed for offices and commercial buildings.',
-  },
-  {
-    slug: 'servers',
-    title: 'Servers and data centers',
-    icon: FaServer,
-    text: 'Enterprise servers, virtualization and storage, plus data center setup and relocation.',
-  },
-  {
-    slug: 'desktops',
-    title: 'Desktops and workstations',
-    icon: FaDesktop,
-    text: 'Business desktops and engineering workstations, from everyday office PCs to high-performance machines.',
-  },
-  {
-    slug: 'laptops',
-    title: 'Laptops and computer services',
-    icon: FaLaptop,
-    text: 'Laptop sales, repairs, upgrades and maintenance for business and personal use.',
-  },
-  {
-    slug: 'printers',
-    title: 'Printers and cartridges',
-    icon: FaPrint,
-    text: 'Printers, scanners and genuine cartridges, with sales, rental and maintenance.',
-  },
-  {
-    slug: 'mobile-devices',
-    title: 'Smartphones, tablets and mobile devices',
-    icon: FaMobileAlt,
-    text: 'Business smartphones, tablets and iPads, with setup, configuration and mobile device management.',
-  },
-  {
-    slug: 'cybersecurity',
-    title: 'Cybersecurity',
-    icon: FaShieldAlt,
-    text: 'Firewalls, antivirus, threat detection and security audits to protect your business data.',
-  },
-  {
-    slug: 'it-support',
-    title: 'IT support and maintenance',
-    icon: FaHeadset,
-    text: '24/7 technical support, system maintenance, troubleshooting and managed IT services.',
-  },
-  {
-    slug: 'audio-visual',
-    title: 'Audio visual systems',
-    icon: FaPhotoVideo,
-    text: 'Video conferencing, presentation systems, digital signage and meeting room technology.',
-    alt: { to: '/elv-access-control', label: 'See our ELV and AV solutions' },
-  },
-  {
-    slug: 'cloud',
-    title: 'Cloud computing',
-    icon: FaCloud,
-    text: 'Cloud migration, storage, backup and SaaS implementation.',
-  },
-]
+import { productGroups, slugify } from '../data/catalog'
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   mainEntity: {
     '@type': 'ItemList',
-    itemListElement: categories.map((c, i) => ({
+    itemListElement: productGroups.map((g, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      item: { '@type': 'Thing', name: c.title, description: c.text },
+      item: {
+        '@type': 'Thing',
+        name: g.title,
+        url: `https://artekcomputer.com/products#${g.slug}`,
+      },
     })),
   },
   publisher: {
@@ -108,8 +37,8 @@ export default function Products() {
   return (
     <>
       <Seo
-        title="IT Products in Dubai for Businesses | Networking, Servers, Laptops, Printers | Artek Computers LLC"
-        description="IT products and services in Dubai and across the UAE: networking, servers, desktops, laptops, printers, mobile devices, cybersecurity, AV and cloud. Supplied, configured and supported by Artek Computers LLC."
+        title="Products in Dubai: Cabling, Networking, Computers and Security | Artek Computers LLC"
+        description="Cat6 and fiber cabling, switches, routers, cabinets, UPS, laptops, desktops, IP phones and CCTV cable, supplied and supported by Artek Computers LLC in Dubai."
         path="/products"
         jsonLd={jsonLd}
       />
@@ -117,47 +46,49 @@ export default function Products() {
       <section className="hero-band">
         <div className="wrap">
           <Breadcrumbs tone="light" items={[{ name: 'Home', to: '/' }, { name: 'Products' }]} />
-          <h1>IT products in Dubai for growing businesses</h1>
+          <h1>IT, cabling and security products in Dubai</h1>
           <p className="lead">
-            From networking and servers to laptops, printers and cybersecurity, Artek Computers LLC supplies,
-            configures and supports the technology your business runs on.
+            Cables, networking, computers and security equipment, supplied and supported by Artek Computers LLC.
           </p>
-          <div className="hero-btns">
-            <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
-            <Link className="btn outline" to="/contact">Get a free quote</Link>
-          </div>
         </div>
       </section>
 
-      <section className="prod-sec" aria-labelledby="prod-h">
+      <nav className="cat-nav" aria-label="Product groups">
         <div className="wrap">
-          <h2 id="prod-h">What we supply and support</h2>
-          <div className="ac-grid">
-            {categories.map((c) => (
-              <div key={c.slug} className="ac-card prod hover-card">
-                <c.icon aria-hidden="true" />
-                <h3>{c.title}</h3>
-                <p>{c.text}</p>
-                <div className="card-links">
-                  <Link className="enq" to={`/contact?service=${c.slug}`}>Enquire about {c.title}</Link>
-                  {c.alt && <Link className="alt" to={c.alt.to}>{c.alt.label}</Link>}
-                </div>
-              </div>
-            ))}
-          </div>
+          {productGroups.map((g) => (
+            <a key={g.slug} href={`#${g.slug}`}>{g.title}</a>
+          ))}
         </div>
-      </section>
+      </nav>
+
+      {productGroups.map((g) => (
+        <section className="cat-sec" id={g.slug} key={g.slug} aria-labelledby={`${g.slug}-h`}>
+          <div className="wrap">
+            <h2 id={`${g.slug}-h`}>{g.title}</h2>
+            <div className="cat-grid">
+              {g.items.map((name) => (
+                <div className="ac-card hover-card cat-item" id={slugify(name)} key={name}>
+                  <h3>{name}</h3>
+                  <Link className="enq" to={`/contact?service=products&product=${encodeURIComponent(name)}`}>
+                    Enquire
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
 
       <section className="closing">
         <div className="wrap">
-          <h2>Not sure what your business needs?</h2>
+          <h2>Looking for a specific product?</h2>
           <p>
-            Tell us about your office or site. We will recommend the right equipment, quote clearly and handle
-            installation and support.
+            Tell us the product and brand you need. We will check availability, quote clearly and handle
+            delivery, installation and support.
           </p>
           <div className="hero-btns">
             <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
-            <Link className="btn outline" to="/contact">Get a free quote</Link>
+            <Link className="btn outline" to="/contact">Request a free quote</Link>
           </div>
         </div>
       </section>
