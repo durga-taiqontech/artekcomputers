@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import { FaPhoneAlt, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 import mark from '../assets/logo-mark.png'
 import { solutions } from '../data/solutions'
 import { productGroups, slugify } from '../data/catalog'
+import { PHONE, PHONE_LINK, WHATSAPP } from '../constants'
 
 // Mega-menu columns: the first three groups stand alone, the remaining groups
 // stack in the fourth column so the column heights stay similar.
@@ -129,119 +131,143 @@ export default function Header() {
   }
 
   return (
-    <header className="bar">
-      <nav className="pill">
-        <Link to="/" className="brand" onClick={close}>
-          <img src={mark} alt="" />
-          <span>Artek <b>Computers</b></span>
-        </Link>
-
-        <button className="burger" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
-          {open ? '✕' : '☰'}
-        </button>
-
-        <ul className={open ? 'menu show' : 'menu'}>
-          <li><NavLink to="/" end onClick={close}>Home</NavLink></li>
-          <li><NavLink to="/company" onClick={close}>Company</NavLink></li>
-          <li
-            className={`has-sub${subOpen ? ' open' : ''}`}
-            ref={subRef}
-            onMouseEnter={openSub}
-            onMouseLeave={scheduleSubClose}
-            onMouseMove={subHoverMove}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget)) setSubOpen(false)
-            }}
-          >
-            <Link
-              to="/solutions"
-              className={pathname.startsWith('/solutions') ? 'active' : ''}
-              aria-haspopup="true"
-              aria-expanded={subOpen}
-              onFocus={openSub}
-              onClick={close}
-            >
-              Solutions ▾
-            </Link>
-            <ul className="sub">
-              {solutions.map((s) => (
-                <li key={s.slug}>
-                  <Link
-                    to={`/solutions/${s.slug}`}
-                    onClick={(e) => {
-                      closeSubAfterClick()
-                      close()
-                      e.currentTarget.blur()
-                    }}
-                  >
-                    {s.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </li>
-          <li
-            className={`has-mega${megaOpen ? ' open' : ''}`}
-            ref={megaRef}
-            onMouseEnter={openMega}
-            onMouseLeave={scheduleMegaClose}
-            onMouseMove={megaHoverMove}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget)) setMegaOpen(false)
-            }}
-          >
-            <NavLink
-              to="/products"
-              aria-haspopup="true"
-              aria-expanded={megaOpen}
-              onFocus={openMega}
-              onClick={close}
-            >
-              Products ▾
-            </NavLink>
-            <div className="mega">
-              <div className="mega-scroll">
-                <div className="mega-grid">
-                  {megaColumns.map((groups, i) => (
-                    <div className="mega-col" key={i}>
-                      {groups.map((g) => (
-                        <div className="mega-group" key={g.slug}>
-                          <Link className="mega-h" to={`/products/${g.slug}`} onClick={megaLinkClick}>{g.title}</Link>
-                          <ul>
-                            {g.items.map((name) => (
-                              <li key={name}>
-                                <Link to={`/products/${g.slug}#${slugify(name)}`} onClick={megaLinkClick}>{name}</Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-                <Link className="mega-all" to="/products" onClick={megaLinkClick}>View all products</Link>
-              </div>
-            </div>
-            <ul className="sub mega-m">
-              {productGroups.map((g) => (
-                <li key={g.slug}>
-                  <Link to={`/products/${g.slug}`} onClick={close}>{g.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </li>
-          <li><NavLink to="/brands" onClick={close}>Brands</NavLink></li>
-          <li><NavLink to="/contact" onClick={close}>Contact Us</NavLink></li>
-          <li className="menu-profile">
-            <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" onClick={close} aria-label="Company profile (PDF, opens in a new tab)">Company profile (PDF)</a>
-          </li>
-        </ul>
-
-        <div className="bar-cta">
-          <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" className="ghost" aria-label="Company profile (PDF, opens in a new tab)">Profile</a>
-          <Link to="/contact" className="btn blue">Enquiry</Link>
+    <>
+      {/* Top strip: scrolls away with the page */}
+      <div className="topstrip">
+        <div className="wrap topstrip-in">
+          <p className="topstrip-msg">
+            Looking for IT, CCTV or ELV solutions?
+            <Link to="/contact">Get a free quote</Link>
+          </p>
+          <ul className="topstrip-links">
+            <li>
+              <a href={PHONE_LINK}><FaPhoneAlt aria-hidden="true" /> {PHONE}</a>
+            </li>
+            <li>
+              <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp +971 50 223 6842 (opens in a new tab)">
+                <FaWhatsapp aria-hidden="true" /> +971 50 223 6842
+              </a>
+            </li>
+            <li>
+              <a href="mailto:sales@artekteam.com"><FaEnvelope aria-hidden="true" /> sales@artekteam.com</a>
+            </li>
+          </ul>
         </div>
-      </nav>
-    </header>
+      </div>
+
+      {/* Main bar: dark, full width, sticky */}
+      <header className="mainbar">
+        <nav className="wrap mainbar-in" aria-label="Main">
+          <Link to="/" className="brand" onClick={close}>
+            <span className="brand-badge"><img src={mark} alt="" /></span>
+            <span>Artek <b>Computers</b></span>
+          </Link>
+
+          <button className="burger" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
+            {open ? '✕' : '☰'}
+          </button>
+
+          <ul className={open ? 'menu show' : 'menu'}>
+            <li><NavLink to="/" end onClick={close}>Home</NavLink></li>
+            <li><NavLink to="/company" onClick={close}>Company</NavLink></li>
+            <li
+              className={`has-sub${subOpen ? ' open' : ''}`}
+              ref={subRef}
+              onMouseEnter={openSub}
+              onMouseLeave={scheduleSubClose}
+              onMouseMove={subHoverMove}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) setSubOpen(false)
+              }}
+            >
+              <Link
+                to="/solutions"
+                className={pathname.startsWith('/solutions') ? 'active' : ''}
+                aria-haspopup="true"
+                aria-expanded={subOpen}
+                onFocus={openSub}
+                onClick={close}
+              >
+                Solutions ▾
+              </Link>
+              <ul className="sub">
+                {solutions.map((s) => (
+                  <li key={s.slug}>
+                    <Link
+                      to={`/solutions/${s.slug}`}
+                      onClick={(e) => {
+                        closeSubAfterClick()
+                        close()
+                        e.currentTarget.blur()
+                      }}
+                    >
+                      {s.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            <li
+              className={`has-mega${megaOpen ? ' open' : ''}`}
+              ref={megaRef}
+              onMouseEnter={openMega}
+              onMouseLeave={scheduleMegaClose}
+              onMouseMove={megaHoverMove}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) setMegaOpen(false)
+              }}
+            >
+              <NavLink
+                to="/products"
+                aria-haspopup="true"
+                aria-expanded={megaOpen}
+                onFocus={openMega}
+                onClick={close}
+              >
+                Products ▾
+              </NavLink>
+              <div className="mega">
+                <div className="mega-scroll">
+                  <div className="mega-grid">
+                    {megaColumns.map((groups, i) => (
+                      <div className="mega-col" key={i}>
+                        {groups.map((g) => (
+                          <div className="mega-group" key={g.slug}>
+                            <Link className="mega-h" to={`/products/${g.slug}`} onClick={megaLinkClick}>{g.title}</Link>
+                            <ul>
+                              {g.items.map((name) => (
+                                <li key={name}>
+                                  <Link to={`/products/${g.slug}#${slugify(name)}`} onClick={megaLinkClick}>{name}</Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  <Link className="mega-all" to="/products" onClick={megaLinkClick}>View all products</Link>
+                </div>
+              </div>
+              <ul className="sub mega-m">
+                {productGroups.map((g) => (
+                  <li key={g.slug}>
+                    <Link to={`/products/${g.slug}`} onClick={close}>{g.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            <li><NavLink to="/brands" onClick={close}>Brands</NavLink></li>
+            <li><NavLink to="/contact" onClick={close}>Contact Us</NavLink></li>
+            
+          </ul>
+
+          <div className="bar-cta">
+            <a href="/Artek-Computers-LLC-Corporate-Profile.pdf" target="_blank" rel="noopener" className="ghost" aria-label="Company profile (PDF, opens in a new tab)">Profile</a>
+            <Link to="/contact" className="btn blue">Enquiry</Link>
+          </div>
+        </nav>
+      </header>
+    </>
   )
 }
