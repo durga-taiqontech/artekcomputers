@@ -9,6 +9,7 @@ import Products from './pages/Products'
 import Brands from './pages/Brands'
 import Solution from './pages/Solution'
 import Solutions from './pages/Solutions'
+import ProductCategory from './pages/ProductCategory'
 import ScrollToHash from './components/ScrollToHash'
 import { WHATSAPP } from './constants'
 
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/elv-access-control" element={<Navigate to="/solutions/elv-access-control" replace />} />
           <Route path="/products" element={<Products />} />
           <Route path="/brands" element={<Brands />} />
+          <Route path="/products/:group" element={<ProductCategory />} />
           <Route path="/solutions/:slug" element={<Solution />} />
           <Route path="/solutions" element={<Solutions />} />
         </Routes>

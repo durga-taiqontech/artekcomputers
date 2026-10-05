@@ -149,11 +149,41 @@ input[aria-invalid=true],select[aria-invalid=true],textarea[aria-invalid=true]{b
 .prose p{margin-top:16px;font-size:16.5px;line-height:1.7}
 .prose a{color:var(--blue-d);text-decoration:underline;text-underline-offset:3px}
 .prose a:hover{color:var(--blue-d2)}
+.prose .prose-link{color:var(--blue-d);text-decoration:none}
+.prose .prose-link:hover{text-decoration:underline;text-underline-offset:3px;color:var(--blue-d2)}
 .about-cols{display:grid;grid-template-columns:1fr 360px;gap:56px;align-items:start}
 .glance-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px}
 .glance-card ul{display:grid;gap:12px;margin-top:14px}
 .glance-card li{display:flex;gap:10px;font-size:15.5px;line-height:1.6;color:var(--mute)}
 .glance-card li svg{color:var(--blue-d);font-size:14px;margin-top:4px;flex-shrink:0}
+
+/* company: what we offer cards */
+.co-offer{padding:8px 0 72px}
+.co-offer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.co-offer-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;display:block}
+.co-offer-card h3{font-size:19px;margin-bottom:10px}
+.co-offer-card p{color:var(--mute);font-size:14.5px;line-height:1.6}
+
+/* product category pages */
+.pcat{padding:56px 0 64px}
+.pcat-split{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start}
+.pcat-full{display:block}
+.pcat-items{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.pcat-photo{margin:8px 0 4px}
+.pcat-brands{padding:0 0 64px}
+.pcat-brands .brand-tiles{padding:0}
+.pcat-related{padding:0 0 72px}
+.pcat-related-p{color:var(--mute);max-width:60ch}
+.cat-view{margin:-14px 0 26px}
+.cat-view a{color:var(--blue-d);font-weight:600;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.cat-view a:hover{color:var(--blue-d2)}
+.cat-sec h2 a{color:inherit}
+.cat-sec h2 a:hover{color:var(--blue-d);text-decoration:underline;text-underline-offset:4px}
+@media(max-width:1020px){
+  .pcat-split{grid-template-columns:1fr;gap:32px}
+}
+@media(max-width:560px){.pcat-items{grid-template-columns:1fr}}
+@media(max-width:1020px){.co-offer-grid{grid-template-columns:1fr}}
 .vm{padding:40px 0 72px}
 .vm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .vm-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px}

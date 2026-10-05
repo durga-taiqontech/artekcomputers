@@ -15,6 +15,9 @@ export const productGroups = [
   {
     slug: 'copper-cabling',
     title: 'Copper cabling',
+    intro: 'Copper network cabling for offices, buildings and data rooms, from Cat6 to Cat8, with patch cords and patch panels.',
+    relatedSolution: 'network-solutions',
+    brandGroupTitle: 'Copper and fiber cabling',
     items: [
       'Cat6 Cable',
       'Cat6 Outdoor Cable',
@@ -29,6 +32,9 @@ export const productGroups = [
   {
     slug: 'fiber-optic',
     title: 'Fiber optic',
+    intro: 'Fiber optic cable, patch cords, panels, splitters and accessories for backbone and access networks.',
+    relatedSolution: 'network-solutions',
+    brandGroupTitle: 'Copper and fiber cabling',
     items: [
       'Fiber Adaptor',
       'Fiber Optic Cable',
@@ -47,6 +53,9 @@ export const productGroups = [
   {
     slug: 'specialty-cables',
     title: 'Specialty and ELV cables',
+    intro: 'Cables for CCTV, audio, fire alarm, control, building automation and other ELV systems.',
+    relatedSolution: 'elv-access-control',
+    brandGroupTitle: 'ELV and security',
     items: [
       'Audio Cable',
       'CCTV Cable',
@@ -64,21 +73,33 @@ export const productGroups = [
   {
     slug: 'cabinets-power',
     title: 'Cabinets and power',
+    intro: 'Network cabinets, power distribution and UPS for server rooms and equipment rooms.',
+    relatedSolution: 'network-solutions',
+    brandGroupTitle: 'Power and cooling',
     items: ['Network Cabinet', 'Patch Free Cabinet', 'PDU', 'UPS'],
   },
   {
     slug: 'networking',
     title: 'Networking',
+    intro: 'Routers and switches for offices, warehouses and industrial sites.',
+    relatedSolution: 'network-solutions',
+    brandGroupTitle: 'Networking and IT infrastructure',
     items: ['Network Router', 'Network Switches', 'Industrial Switches'],
   },
   {
     slug: 'computers',
     title: 'Computers',
+    intro: 'Desktops, laptops and gaming PCs for business and personal use.',
+    relatedSolution: 'computer-systems',
+    brandGroupTitle: 'Computers, storage and peripherals',
     items: ['Desktops', 'Gaming PC', 'Laptops'],
   },
   {
     slug: 'telephony-displays',
     title: 'Telephony and displays',
+    intro: 'IP PBX systems, IP phones and interactive screens for meeting rooms and offices.',
+    relatedSolution: 'voice-telephony',
+    brandGroupTitle: 'Networking and IT infrastructure',
     items: ['IP PBX', 'IP Phone', 'Interactive Screen'],
   },
 ]

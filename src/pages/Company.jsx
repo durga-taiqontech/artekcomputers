@@ -86,16 +86,23 @@ export default function Company() {
             <h2 id="about-h">Who we are</h2>
             <p>
               Artek Computers LLC is an IT integrated systems company established in the United Arab Emirates.
-              We provide end-to-end solutions supporting the most advanced information technologies: computer
-              systems (hardware and software), computer accessories and consumables, networks and
-              telecommunications, intelligent cabling, printers, cartridges and toners, ELV systems and
+              We provide end-to-end solutions supporting the most advanced information technologies:{' '}
+              <Link to="/solutions/computer-systems" className="prose-link">computer systems (hardware and software)</Link>,
+              computer accessories and consumables,{' '}
+              <Link to="/solutions/network-solutions" className="prose-link">networks and telecommunications</Link>,{' '}
+              <Link to="/solutions/network-solutions" className="prose-link">intelligent cabling</Link>, printers,
+              cartridges and toners,{' '}
+              <Link to="/solutions/elv-access-control" className="prose-link">ELV systems</Link> and
               application software solutions. We provide services from residential to corporate customers.
             </p>
             <p>
               Whatever your needs, wherever you are, we can help. We supply new parts, options, replacements,
-              upgrades and complete units for branded PCs, desktops, laptops, servers, printers, toners, PABX
-              and biometric access control. We help you cut lead times and reduce costs, with packages tailored
-              to a company like yours.
+              upgrades and complete units for{' '}
+              <Link to="/products#computers" className="prose-link">branded PCs, desktops, laptops, servers</Link>,
+              printers, toners,{' '}
+              <Link to="/solutions/voice-telephony" className="prose-link">PABX</Link> and{' '}
+              <Link to="/solutions/elv-access-control" className="prose-link">biometric access control</Link>.
+              We help you cut lead times and reduce costs, with packages tailored to a company like yours.
             </p>
           </div>
           <div className="glance-card hover-card">
@@ -156,6 +163,26 @@ export default function Company() {
                 efficiency, professionalism and profitability of the companies we serve.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="co-offer" aria-labelledby="co-offer-h">
+        <div className="wrap">
+          <h2 id="co-offer-h">What we offer</h2>
+          <div className="co-offer-grid">
+            <Link to="/solutions" className="hover-card co-offer-card">
+              <h3>Solutions</h3>
+              <p>Ten services from one company: CCTV, ELV and access control, IT support, networking, cloud, telephony and more.</p>
+            </Link>
+            <Link to="/products" className="hover-card co-offer-card">
+              <h3>Products</h3>
+              <p>Cables, networking, computers and security equipment, supplied and supported.</p>
+            </Link>
+            <Link to="/brands" className="hover-card co-offer-card">
+              <h3>Brands</h3>
+              <p>Technology from the brands your business already trusts.</p>
+            </Link>
           </div>
         </div>
       </section>

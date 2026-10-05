@@ -16,7 +16,9 @@ export default function Header() {
   const [megaOpen, setMegaOpen] = useState(false)
   const [megaClickClosed, setMegaClickClosed] = useState(false)
   const subRef = useRef(null)
+  const subTimer = useRef(null)
   const megaRef = useRef(null)
+  const megaTimer = useRef(null)
   const close = () => setOpen(false)
   const { pathname } = useLocation()
   const [lastPath, setLastPath] = useState(pathname)
@@ -28,21 +30,31 @@ export default function Header() {
     setMegaClickClosed(false)
   }
 
+  // Clear pending close timers on unmount so they never fire on a dead header.
+  useEffect(() => () => {
+    clearTimeout(subTimer.current)
+    clearTimeout(megaTimer.current)
+  }, [])
+
   // Escape and click-outside close whichever panel is open.
   useEffect(() => {
     if (!subOpen && !megaOpen) return
     const onDown = (e) => {
       if (subOpen && subRef.current && !subRef.current.contains(e.target)) {
+        clearTimeout(subTimer.current)
         setSubOpen(false)
         setSubClickClosed(false)
       }
       if (megaOpen && megaRef.current && !megaRef.current.contains(e.target)) {
+        clearTimeout(megaTimer.current)
         setMegaOpen(false)
         setMegaClickClosed(false)
       }
     }
     const onKey = (e) => {
       if (e.key === 'Escape') {
+        clearTimeout(subTimer.current)
+        clearTimeout(megaTimer.current)
         setSubOpen(false)
         setSubClickClosed(false)
         setMegaOpen(false)
@@ -57,8 +69,27 @@ export default function Header() {
     }
   }, [subOpen, megaOpen])
 
+  // 150ms grace before a panel closes on mouse leave: a diagonal mouse path
+  // from the pill into the panel crosses the gap without triggering close.
+  // Escape, click outside, link clicks and route changes close immediately.
+  const scheduleSubClose = () => {
+    clearTimeout(subTimer.current)
+    subTimer.current = setTimeout(() => {
+      setSubOpen(false)
+      setSubClickClosed(false)
+    }, 150)
+  }
+  const scheduleMegaClose = () => {
+    clearTimeout(megaTimer.current)
+    megaTimer.current = setTimeout(() => {
+      setMegaOpen(false)
+      setMegaClickClosed(false)
+    }, 150)
+  }
+
   // Opening one panel closes the other.
   const openSub = () => {
+    clearTimeout(subTimer.current)
     if (!subClickClosed) {
       setSubOpen(true)
       setMegaOpen(false)
@@ -66,6 +97,7 @@ export default function Header() {
     }
   }
   const openMega = () => {
+    clearTimeout(megaTimer.current)
     if (!megaClickClosed) {
       setMegaOpen(true)
       setSubOpen(false)
@@ -73,10 +105,12 @@ export default function Header() {
     }
   }
   const closeSubAfterClick = () => {
+    clearTimeout(subTimer.current)
     setSubOpen(false)
     setSubClickClosed(true)
   }
   const closeMegaAfterClick = () => {
+    clearTimeout(megaTimer.current)
     setMegaOpen(false)
     setMegaClickClosed(true)
   }
@@ -105,10 +139,7 @@ export default function Header() {
             className={`has-sub${subOpen ? ' open' : ''}`}
             ref={subRef}
             onMouseEnter={openSub}
-            onMouseLeave={() => {
-              setSubOpen(false)
-              setSubClickClosed(false)
-            }}
+            onMouseLeave={scheduleSubClose}
             onBlur={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget)) setSubOpen(false)
             }}
@@ -147,10 +178,7 @@ export default function Header() {
             className={`has-mega${megaOpen ? ' open' : ''}`}
             ref={megaRef}
             onMouseEnter={openMega}
-            onMouseLeave={() => {
-              setMegaOpen(false)
-              setMegaClickClosed(false)
-            }}
+            onMouseLeave={scheduleMegaClose}
             onBlur={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget)) setMegaOpen(false)
             }}
@@ -173,11 +201,11 @@ export default function Header() {
                   <div className="mega-col" key={i}>
                     {groups.map((g) => (
                       <div className="mega-group" key={g.slug}>
-                        <Link className="mega-h" to={`/products#${g.slug}`} onClick={megaLinkClick}>{g.title}</Link>
+                        <Link className="mega-h" to={`/products/${g.slug}`} onClick={megaLinkClick}>{g.title}</Link>
                         <ul>
                           {g.items.map((name) => (
                             <li key={name}>
-                              <Link to={`/products#${slugify(name)}`} onClick={megaLinkClick}>{name}</Link>
+                              <Link to={`/products/${g.slug}#${slugify(name)}`} onClick={megaLinkClick}>{name}</Link>
                             </li>
                           ))}
                         </ul>
@@ -191,7 +219,7 @@ export default function Header() {
             <ul className="sub mega-m">
               {productGroups.map((g) => (
                 <li key={g.slug}>
-                  <Link to={`/products#${g.slug}`} onClick={close}>{g.title}</Link>
+                  <Link to={`/products/${g.slug}`} onClick={close}>{g.title}</Link>
                 </li>
               ))}
             </ul>

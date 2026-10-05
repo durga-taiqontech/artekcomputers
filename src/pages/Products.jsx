@@ -64,7 +64,8 @@ export default function Products() {
       {productGroups.map((g) => (
         <section className="cat-sec" id={g.slug} key={g.slug} aria-labelledby={`${g.slug}-h`}>
           <div className="wrap">
-            <h2 id={`${g.slug}-h`}>{g.title}</h2>
+            <h2 id={`${g.slug}-h`}><Link to={`/products/${g.slug}`}>{g.title}</Link></h2>
+            <p className="cat-view"><Link to={`/products/${g.slug}`}>View {g.title}</Link></p>
             <div className="cat-grid">
               {g.items.map((name) => (
                 <div className="ac-card hover-card cat-item" id={slugify(name)} key={name}>
