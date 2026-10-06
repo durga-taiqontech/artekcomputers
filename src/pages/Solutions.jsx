@@ -13,7 +13,7 @@ export default function Solutions() {
         path="/solutions"
       />
 
-      <section className="hero-band">
+      <section className="hero-band sol-list-hero">
         <div className="wrap">
           <Breadcrumbs tone="light" items={[{ name: 'Home', to: '/' }, { name: 'Solutions' }]} />
           <h1>IT and security solutions in Dubai</h1>
@@ -28,19 +28,17 @@ export default function Solutions() {
           <h2 id="sol-h" className="sr-only">Our solutions</h2>
           <div className="sol-grid">
             {solutions.map((s) => (
-              <div className="ac-card prod hover-card" key={s.slug}>
+              <Link className="sol-lcard hover-card" key={s.slug} to={`/solutions/${s.slug}`} aria-label={`Learn more about ${s.title}`}>
                 <h3>{s.title}</h3>
                 <p>{s.blurb}</p>
-                <div className="card-links">
-                  <Link className="enq" to={`/solutions/${s.slug}`}>Learn more about {s.title}</Link>
-                </div>
-              </div>
+                <span className="sol-more">Learn more</span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="closing">
+      <section className="closing sol-list-closing">
         <div className="wrap">
           <h2>Not sure which service you need?</h2>
           <p>Tell us about your business and we will point you to the right solution.</p>

@@ -1,5 +1,4 @@
 import { Link, useParams } from 'react-router-dom'
-import { FaCheck } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
 import { solutions } from '../data/solutions'
@@ -101,80 +100,81 @@ function SolutionPage({ solution }) {
     <>
       <Seo title={page.seo.title} description={page.seo.description} path={`/solutions/${solution.slug}`} jsonLd={jsonLd} image={image ? `https://artekcomputer.com${image}` : undefined} />
 
-      <section className="hero-band">
+      <section className="hero-band sol-hero">
+        {image && (
+          <>
+            <img
+              className="sol-hero-img"
+              src={image}
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              width="1920"
+              height="1080"
+              style={{ objectPosition: page.heroFocus || 'center 35%' }}
+            />
+            <div className="sol-hero-shade" aria-hidden="true" />
+          </>
+        )}
         <div className="wrap">
-          <Breadcrumbs
-            tone="light"
-            items={[{ name: 'Home', to: '/' }, { name: 'Solutions', to: '/solutions' }, { name: solution.title }]}
-          />
-          <h1>{page.h1}</h1>
-          <p className="lead">{page.lead}</p>
-          <div className="hero-btns">
-            <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
-            <Link className="btn outline" to={contactHref}>Get a free site survey</Link>
+          <div className="sol-hero-content">
+            <Breadcrumbs
+              tone="light"
+              items={[{ name: 'Home', to: '/' }, { name: 'Solutions', to: '/solutions' }, { name: solution.title }]}
+            />
+            <h1>{page.h1}</h1>
+            <p className="lead">{page.lead}</p>
+            <div className="hero-btns">
+              <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
+              <Link className="btn outline" to={contactHref}>Get a free site survey</Link>
+            </div>
           </div>
         </div>
       </section>
-
       {page.offer && (
-        <section className="offer" aria-labelledby="offer-h">
+        <section className="sol-sec" aria-labelledby="offer-h">
           <div className="wrap">
-            <h2 id="offer-h">{page.offer.h2}</h2>
-            <p className="intro">{page.offer.intro}</p>
-            <div className="ac-grid">
+            <h2 id="offer-h" className="sol-h2">{page.offer.h2}</h2>
+            {page.offer.intro && <p className="sol-intro">{page.offer.intro}</p>}
+            <div className="sol-cards">
               {page.offer.items.map((item) => (
-                <div className="ac-card hover-card" key={item.title}>
+                <div className="sol-card hover-card" key={item.title}>
                   <item.icon aria-hidden="true" />
                   <h3>{item.title}</h3>
                   <p>{item.text}</p>
                 </div>
               ))}
             </div>
+            {page.brands?.length > 0 && (
+              <p className="sol-brands-line"><strong>Brands:</strong> {page.brands.join(', ')}</p>
+            )}
           </div>
         </section>
       )}
 
-      {page.feature && (
-        <section className="split-sec" aria-labelledby="feature-h">
-          <div className="wrap split">
-            <div>
-              <h2 id="feature-h">{page.feature.h2}</h2>
-              {image && (
-                <figure className="sol-photo">
-                  <img src={image} alt={page.imageAlt} loading="lazy" decoding="async" width="800" height="500" style={{ objectPosition: page.imagePosition || 'center' }} />
-                </figure>
-              )}
-              <p className="body-p">{page.feature.p1}</p>
-              <p className="body-p">{page.feature.p2}</p>
-            </div>
-            <div className="check-card">
-              <ul>
-                {page.feature.checklist.map((item) => (
-                  <li key={item}>
-                    <FaCheck aria-hidden="true" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              {page.feature.button && (
-                <Link className="btn blue" to={page.feature.button.to}>{page.feature.button.label}</Link>
-              )}
+      {page.feature?.p1 && (
+        <section className="sol-sec" aria-labelledby="feature-h">
+          <div className="wrap">
+            <div className="sol-info">
+              <h2 id="feature-h" className="sol-h2">{page.feature.h2}</h2>
+              <p className="sol-body">{page.feature.p1}</p>
+              {page.feature.p2 && <p className="sol-body">{page.feature.p2}</p>}
             </div>
           </div>
         </section>
       )}
 
       {page.steps && (
-        <section className="steps-sec" aria-labelledby="steps-h">
+        <section className="sol-sec" aria-labelledby="steps-h">
           <div className="wrap">
-            <h2 id="steps-h">How it works</h2>
-            <ol className="steps">
+            <h2 id="steps-h" className="sol-h2">How it works</h2>
+            <ol className="sol-steps">
               {page.steps.map((step) => (
                 <li key={step.title}>
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.text}</p>
-                  </div>
+                  <h3>{step.title}</h3>
+                  <p>{step.text}</p>
                 </li>
               ))}
             </ol>
@@ -182,22 +182,11 @@ function SolutionPage({ solution }) {
         </section>
       )}
 
-      {page.brands?.length > 0 && (
-        <section className="brands-sec" aria-labelledby="brands-h">
-          <div className="wrap">
-            <h2 id="brands-h">Brands we install</h2>
-            <p className="brands">
-              {page.brands.map((brand) => <span key={brand}>{brand}</span>)}
-            </p>
-          </div>
-        </section>
-      )}
-
       {page.faqs?.length > 0 && (
-        <section className="faq-sec" aria-labelledby="faq-h">
+        <section className="sol-sec" aria-labelledby="faq-h">
           <div className="wrap">
-            <h2 id="faq-h">Frequently asked questions</h2>
-            <div className="faq">
+            <h2 id="faq-h" className="sol-h2">Frequently asked questions</h2>
+            <div className="sol-faq">
               {page.faqs.map((f) => (
                 <details key={f.q}>
                   <summary>{f.q}</summary>
@@ -208,17 +197,6 @@ function SolutionPage({ solution }) {
           </div>
         </section>
       )}
-
-      <section className="closing">
-        <div className="wrap">
-          <h2>{page.closing.h2}</h2>
-          <p>{page.closing.text}</p>
-          <div className="hero-btns">
-            <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
-            <Link className="btn outline" to={contactHref}>Get a free site survey</Link>
-          </div>
-        </div>
-      </section>
     </>
   )
 }

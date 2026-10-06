@@ -50,16 +50,17 @@ export const solutions = [
   {
     slug: 'cctv-security',
     title: 'CCTV & Security',
-    blurb: 'SIRA-compliant CCTV design, supply and installation, with Dubai Police approval handled end to end.',
+    blurb: 'SIRA-compliant CCTV design, supply and installation.',
     page: {
       imageAlt: 'Technician installing a CCTV camera on a building wall',
+      heroFocus: '75% 30%',
       contactValue: 'cctv-security',
       seo: {
-        title: 'SIRA Approved CCTV Installation in Dubai | Artek Computers LLC',
-        description: 'SIRA-approved CCTV installation, maintenance and Dubai Police compliance for homes and businesses in Dubai and the UAE. We handle the SIRA NOC application for you. Free site survey.',
+        title: 'SIRA-compliant CCTV Installation in Dubai | Artek Computers LLC',
+        description: 'SIRA-compliant CCTV installation and maintenance for homes and businesses in Dubai and the UAE. We handle the compliance process and documentation for you. Free site survey.',
       },
-      h1: 'SIRA approved CCTV installation in Dubai',
-      lead: 'Every CCTV system installed in Dubai must comply with SIRA regulations. Artek Computers designs, installs and maintains compliant systems for homes and businesses, and manages the approval process for you.',
+      h1: 'SIRA-compliant CCTV installation in Dubai',
+      lead: 'Every CCTV system installed in Dubai must comply with SIRA regulations. Artek Computers designs, installs and maintains compliant systems for homes and businesses, and manages the compliance process for you.',
       offer: {
         h2: 'CCTV and security systems we install',
         intro: 'Systems for commercial, retail, hospitality and residential properties.',
@@ -68,39 +69,32 @@ export const solutions = [
           { icon: FaTools, title: 'CCTV maintenance and AMC', text: 'Annual maintenance contracts that keep your system working and compliant.' },
           { icon: FaFingerprint, title: 'Access control', text: 'Biometric and card access, linked to your CCTV.' },
           { icon: FaHdd, title: 'Video storage and monitoring', text: 'NVR recording and remote viewing.' },
-          { icon: FaBoxOpen, title: 'Camera supply', text: 'SIRA-approved cameras and recorders, supplied direct.' },
+          { icon: FaBoxOpen, title: 'Camera supply', text: 'Cameras and recorders for compliant systems, supplied direct.' },
         ],
       },
       feature: {
-        h2: 'SIRA certified and Dubai Police approved: what this means for you',
-        p1: 'Non-compliant CCTV can lead to fines, forced removal or invalid insurance claims. Artek Computers is an officially approved SIRA CCTV company, and our engineers are individually certified.',
-        p2: 'We manage the full compliance process, from system design and installation to SIRA NOC approval and documentation.',
-        checklist: [
-          'Full SIRA NOC application and approval handled for you',
-          'CCTV installations for commercial, retail, hospitality and residential properties',
-          'EGUARD and VIDEOGUARD connectivity for Dubai Police integration',
-          'Annual maintenance contracts (AMC) to keep your system compliant year-round',
-        ],
-        button: { label: 'Get a free site survey', to: '/contact?service=cctv-security' },
+        h2: 'CCTV compliance in Dubai',
+        p1: 'Non-compliant CCTV can lead to fines, forced removal or invalid insurance claims. We manage the compliance process from system design and installation to documentation.',
+        p2: null,
+        checklist: [],
       },
       steps: [
         { title: 'Free site survey', text: 'We visit, assess risk areas and agree camera positions.' },
         { title: 'System design and quote', text: 'A clear quote with no hidden charges.' },
-        { title: 'Installation', text: 'Installed by SIRA-certified engineers.' },
-        { title: 'SIRA NOC and documentation', text: 'We submit and follow up the approval.' },
-        { title: 'Ongoing support', text: 'AMC and 24/7 support keep your system running.' },
+        { title: 'Installation', text: 'Installed by trained engineers.' },
+        { title: 'Documentation and handover', text: 'We prepare and hand over your system documentation.' },
+        { title: 'Ongoing support', text: 'AMC and support keep your system running.' },
       ],
-      brands: ['Hikvision', 'Dahua', 'and other SIRA-approved brands'],
+      brands: ['Hikvision', 'Dahua and other leading brands'],
       faqs: [
-        { q: 'Is SIRA approval required for CCTV in Dubai?', a: 'Yes. CCTV systems installed in Dubai must comply with SIRA regulations. We handle the application and documentation for you.' },
+        { q: 'Is SIRA compliance required for CCTV in Dubai?', a: 'Yes. CCTV systems installed in Dubai must comply with SIRA regulations. We handle the compliance and documentation for you.' },
         { q: 'How long does installation take?', a: 'It depends on the size of the site. After the free survey we give you a clear timeline with your quote.' },
-        { q: 'Can you connect my system to Dubai Police?', a: 'Yes. We provide EGUARD and VIDEOGUARD connectivity for Dubai Police integration where required.' },
         { q: 'Do you offer maintenance contracts?', a: 'Yes. Our annual maintenance contracts keep your system working and compliant all year.' },
         { q: 'Do you install CCTV for homes as well as businesses?', a: 'Yes, for commercial, retail, hospitality and residential properties.' },
       ],
       closing: {
         h2: 'Get your CCTV installed the compliant way',
-        text: 'Book a free site survey. We will recommend the right system, quote clearly and handle SIRA approval.',
+        text: 'Book a free site survey. We will recommend the right system, quote clearly and manage the compliance process.',
       },
     },
   },
@@ -110,6 +104,7 @@ export const solutions = [
     blurb: 'ELV, AV and access control: structured cabling, security integration, biometric and card access, video conferencing and digital signage.',
     page: {
       imageAlt: 'Biometric access control reader at a building entrance',
+      heroFocus: '80% 50%',
       contactValue: 'elv-access-control',
       seo: {
         title: 'ELV, AV and Access Control Systems in Dubai, UAE | Artek Computers LLC',
@@ -169,6 +164,7 @@ export const solutions = [
     blurb: 'Managed IT support, AMC contracts and onsite helpdesk cover for businesses across Dubai.',
     page: {
       imageAlt: 'IT engineer supporting a user at an office desk',
+      heroFocus: '65% 35%',
       contactValue: 'it-services',
       seo: {
         title: 'IT Service Provider in Dubai | IT Support, Audit and Outsourcing | Artek Computers LLC',
@@ -225,6 +221,7 @@ export const solutions = [
     blurb: 'Structured cabling, switching, fibre optics and office Wi-Fi design and installation.',
     page: {
       imageAlt: 'Structured network cabling connected to a patch panel',
+      heroFocus: '10% 50%',
       contactValue: 'network-solutions',
       seo: {
         title: 'Network Solutions and Structured Cabling in Dubai | Artek Computers LLC',
@@ -277,10 +274,11 @@ export const solutions = [
   },
   {
     slug: 'cybersecurity',
-    title: 'Cybersecurity & VAPT',
-    blurb: 'Firewalls, endpoint protection, threat detection, security audits and vulnerability assessment.',
+    title: 'Cybersecurity',
+    blurb: 'Firewalls, endpoint protection, threat detection and security audits.',
     page: {
       imageAlt: 'Security analysts reviewing network activity in a control room',
+      heroFocus: '0% 50%',
       contactValue: 'cybersecurity',
       seo: {
         title: 'Cybersecurity Solutions in Dubai | Firewalls, Endpoint Protection and IT Audit | Artek Computers LLC',
@@ -392,6 +390,7 @@ export const solutions = [
     blurb: 'Microsoft 365, Azure and licensing, deployed and migrated for you.',
     page: {
       imageAlt: 'Team collaborating on laptops in a modern office',
+      heroFocus: '40% 55%',
       contactValue: 'microsoft-solutions',
       seo: {
         title: 'Microsoft Licensing and Solutions in Dubai | Artek Computers LLC',
@@ -446,6 +445,7 @@ export const solutions = [
     blurb: 'Workstations, servers and POS hardware supplied and configured.',
     page: {
       imageAlt: 'Person typing on a laptop at a desk',
+      heroFocus: '45% 55%',
       contactValue: 'computer-systems',
       seo: {
         title: 'Computer Systems, Laptops and Servers in Dubai | Artek Computers LLC',
@@ -502,6 +502,7 @@ export const solutions = [
     blurb: 'IP PBX and business phone systems, installed and maintained.',
     page: {
       imageAlt: 'Call center team wearing headsets at their desks',
+      heroFocus: '45% 55%',
       contactValue: 'voice-telephony',
       seo: {
         title: 'IP Telephony and PBX Systems in Dubai | Artek Computers LLC',
@@ -556,6 +557,7 @@ export const solutions = [
     blurb: 'Server room and rack moves, planned for zero downtime.',
     page: {
       imageAlt: 'Engineers working beside server racks in a data center',
+      heroFocus: '55% 45%',
       contactValue: 'data-center-relocation',
       seo: {
         title: 'Data Center and Server Relocation in Dubai | Artek Computers LLC',
