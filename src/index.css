@@ -425,6 +425,11 @@ html{scroll-padding-top:calc(var(--header-h) + 16px)}
 /* panels attach directly under the bar, no gap */
 .mega{top:100%;border-radius:0 0 16px 16px}
 .sub{border-radius:0 0 14px 14px}
+/* mega panel group headings: bold, full-column-width rule underneath */
+.mega-h{display:block;font-weight:700;font-size:16.5px;color:var(--ink);padding-bottom:8px;margin-bottom:10px;border-bottom:2px solid var(--blue)}
+.mega-h:hover{color:var(--blue-d)}
+/* two-column brand groups: heading is a grid item stretched beside the list; start-align it so the rule underlines the text, not the stretched box */
+.mega-group.two .mega-h{align-self:start}
 
 /* page tops no longer need to clear a fixed header */
 .hero,.hero-band,.contact{padding-top:64px}
