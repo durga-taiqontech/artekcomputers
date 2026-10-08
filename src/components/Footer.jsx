@@ -1,4 +1,5 @@
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaPinterestP } from 'react-icons/fa'
+import { COMPANY_NAME_AR } from '../constants'
 import { FaXTwitter } from 'react-icons/fa6'
 import mark from '../assets/logo-mark.png'
 
@@ -18,6 +19,7 @@ export default function Footer() {
           <img src={mark} alt="" />
           <div>
             <strong>Artek Computers LLC</strong>
+            <span className="brand-ar brand-ar--foot" lang="ar" dir="rtl">{COMPANY_NAME_AR}</span>
             <p>P.O Box 112280, Al Rafa Road, Computer Street, Bur Dubai, Dubai, UAE</p>
           </div>
         </div>

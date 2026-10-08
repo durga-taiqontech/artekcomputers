@@ -18,7 +18,7 @@ import {
 } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import { solutionSlugs } from '../data/solutions'
-import { PHONE, PHONE_LINK } from '../constants'
+import { PHONE, PHONE_LINK, COMPANY_NAME_AR } from '../constants'
 import reception from '../assets/cameras/reception.jpg'
 import serverRoom from '../assets/cameras/server-room.jpg'
 import warehouse from '../assets/cameras/warehouse.jpg'
@@ -131,6 +131,7 @@ const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': ['Organization', 'LocalBusiness'],
   name: 'Artek Computers LLC',
+  alternateName: COMPANY_NAME_AR,
   url: 'https://artekcomputer.com',
   telephone: '+971 4 379 7128',
   email: 'info@artekteam.com',

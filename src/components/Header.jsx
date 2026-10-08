@@ -4,7 +4,7 @@ import { FaPhoneAlt, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
 import mark from '../assets/logo-mark.png'
 import { solutions } from '../data/solutions'
 import { productGroups, brandGroups, slugify } from '../data/catalog'
-import { PHONE, PHONE_LINK, WHATSAPP } from '../constants'
+import { PHONE, PHONE_LINK, WHATSAPP, COMPANY_NAME_AR } from '../constants'
 
 // Products columns: three groups stand alone, the rest stack in the fourth.
 const [pFirst, pSecond, pThird, ...pRest] = productGroups
@@ -128,6 +128,8 @@ export default function Header() {
     close()
     e.currentTarget.blur()
   }
+  /* eslint-disable react-hooks/refs -- itemProps is a handler factory for the race-free hover
+     panels: the closures only run on events, and the timer/node maps must stay refs. */
   const itemProps = (id) => ({
     ref: (el) => { refs.current[id] = el },
     onMouseEnter: () => openPanel(id),
@@ -137,6 +139,7 @@ export default function Header() {
       if (!e.currentTarget.contains(e.relatedTarget)) setPanel((p) => (p === id ? null : p))
     },
   })
+  /* eslint-enable react-hooks/refs */
 
   return (
     <>
@@ -168,7 +171,10 @@ export default function Header() {
         <nav className="wrap mainbar-in" aria-label="Main">
           <Link to="/" className="brand" onClick={close}>
             <span className="brand-badge"><img src={mark} alt="" /></span>
-            <span>Artek <b>Computers</b></span>
+            <span className="brand-ar-lockup">
+              <span>Artek <b>Computers</b></span>
+              <span className="brand-ar brand-ar--bar" lang="ar" dir="rtl">{COMPANY_NAME_AR}</span>
+            </span>
           </Link>
 
           <button className="burger" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
