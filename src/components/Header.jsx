@@ -50,6 +50,18 @@ function Mega({ columns, groupTo, itemTo, itemsOf, allTo, allLabel, onLink }) {
 }
 
 export default function Header() {
+
+  const [isShrunk, setIsShrunk] = useState(false)
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    const onScroll = () => setIsShrunk(window.scrollY > 80)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   const [open, setOpen] = useState(false)
   // Which desktop panel is open: 'sub' (Solutions), 'products', 'brands' or null.
   const [panel, setPanel] = useState(null)

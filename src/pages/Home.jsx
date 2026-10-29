@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
+import { Fragment, lazy, Suspense, useEffect, useState } from 'react'
+import { motion, useReducedMotion, useSpring } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
   FaBuilding,
   FaCheck,
-  FaCheckCircle,
   FaCloud,
   FaDesktop,
   FaHome,
+  FaMapMarkerAlt,
   FaNetworkWired,
   FaPhoneAlt,
   FaShieldAlt,
@@ -19,10 +20,6 @@ import {
 import Seo from '../components/Seo'
 import { solutionSlugs } from '../data/solutions'
 import { PHONE, PHONE_LINK, COMPANY_NAME_AR } from '../constants'
-import reception from '../assets/cameras/reception.jpg'
-import serverRoom from '../assets/cameras/server-room.jpg'
-import warehouse from '../assets/cameras/warehouse.jpg'
-import carPark from '../assets/cameras/car-park.jpg'
 
 const proof = [
   'Authorized dealer of leading brands',
@@ -39,16 +36,9 @@ const brands = [
 ]
 
 const serve = [
-  { icon: FaBuilding, title: 'Corporate offices', text: 'Networks, computers, telephony and support for offices of every size.' },
-  { icon: FaWarehouse, title: 'Warehouses and commercial buildings', text: 'Cabling, CCTV and access control for larger sites.' },
-  { icon: FaHome, title: 'Homes and villas', text: 'Security cameras and connectivity for residential properties.' },
-]
-
-const cameras = [
-  { cam: 'CAM 01', label: 'Reception', img: reception, view: 'CCTV view of the reception desk and entrance' },
-  { cam: 'CAM 02', label: 'Server room', img: serverRoom, view: 'CCTV view of server racks in the server room' },
-  { cam: 'CAM 03', label: 'Warehouse', img: warehouse, view: 'CCTV view of the warehouse' },
-  { cam: 'CAM 04', label: 'Car park', img: carPark, view: 'CCTV view of the car park' },
+  { icon: FaBuilding, title: 'Corporate offices', text: 'Networks, computers, telephony and support for offices of every size.', img: '/images/serve/corporate.webp', alt: 'Corporate office with structured network cabling and IT equipment in Dubai' },
+  { icon: FaWarehouse, title: 'Warehouses and commercial buildings', text: 'Cabling, CCTV and access control for larger sites.', img: '/images/serve/warehouse.webp', alt: 'Warehouse interior with CCTV and access control coverage in Dubai' },
+  { icon: FaHome, title: 'Homes and villas', text: 'Security cameras and connectivity for residential properties.', img: '/images/serve/villa.webp', alt: 'Villa exterior with security cameras and home networking in Dubai' },
 ]
 
 const solutions = [
@@ -91,42 +81,6 @@ const solutions = [
   { icon: FaShieldAlt, title: 'CyberSecurity', text: 'Firewalls, endpoint protection and secure video storage.', slug: 'cybersecurity' },
 ]
 
-function useDubaiTime() {
-  const [now, setNow] = useState(() => new Date())
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(id)
-  }, [])
-  return now.toLocaleTimeString('en-GB', { timeZone: 'Asia/Dubai', hour12: false })
-}
-
-function MonitorWall() {
-  const time = useDubaiTime()
-  return (
-    <div className="wall" aria-label="CCTV monitor wall showing four live camera feeds">
-      <div className="tiles">
-        {cameras.map((c) => (
-          <div key={c.cam} className="tile" aria-label={c.view} role="img">
-            <span
-              className="photo"
-              aria-hidden="true"
-              style={{ backgroundImage: `url(${c.img}), linear-gradient(180deg,#16233a,#0d1728)` }}
-            />
-            <span className="scrim" aria-hidden="true" />
-            <span className="cam">{c.cam} {c.label}</span>
-            <span className="rec">REC</span>
-            <time dateTime={time}>{time} GST</time>
-          </div>
-        ))}
-      </div>
-      <p className="wall-status">
-        <FaCheckCircle aria-hidden="true" />
-        CCTV and access control, installed and supported by one team
-      </p>
-    </div>
-  )
-}
-
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': ['Organization', 'LocalBusiness'],
@@ -162,20 +116,283 @@ const faqJsonLd = {
   })),
 }
 
+/* ---------- Hero animation helpers (framer-motion only) ---------- */
+
+const headlineWords = 'IT solutions, CCTV and networking for businesses in Dubai'.split(' ')
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.1 + i * 0.12, duration: 0.5, ease: 'easeOut' },
+  }),
+}
+
+const proofVariants = {
+  hidden: { opacity: 0 },
+  visible: (i) => ({
+    opacity: 1,
+    transition: { delay: 1.1 + i * 0.15, duration: 0.5 },
+  }),
+}
+
+function GlowBlobs({ reduced }) {
+  const drift = (x, y, s, d) =>
+    reduced
+      ? {}
+      : {
+          animate: { x: [0, x, 0], y: [0, y, 0], scale: [1, s, 1] },
+          transition: { duration: d, repeat: Infinity, ease: 'easeInOut' },
+        }
+
+  return (
+    <>
+      <motion.div className="hero-glow g1" aria-hidden="true" {...drift(60, 40, 1.15, 16)} />
+      <motion.div className="hero-glow g2" aria-hidden="true" {...drift(-50, -30, 1.1, 19)} />
+      <motion.div className="hero-glow g3" aria-hidden="true" {...drift(-40, 50, 1.2, 22)} />
+    </>
+  )
+}
+
+const HeroCamera = lazy(() => import('../components/HeroCamera'))
+
+// 3D only on screens 768px and wider, and not for reduced-motion users.
+function useIs3D(reduced) {
+  const [wide, setWide] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const update = () => setWide(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return wide && !reduced
+}
+
+function StaticCamera() {
+  return (
+    <div className="hero-visual" aria-hidden="true">
+      <div className="hero-visual-glow" />
+      <img
+        src="/hero-camera.png"
+        alt=""
+        onError={(e) => { e.currentTarget.style.display = 'none' }}
+      />
+    </div>
+  )
+}
+
+function HeroVisual({ reduced }) {
+  const is3D = useIs3D(reduced)
+  if (!is3D) return <StaticCamera />
+  return (
+    <Suspense fallback={<StaticCamera />}>
+      <HeroCamera />
+    </Suspense>
+  )
+}
+
+/* ---------- Section headings ---------- */
+
+function SectionTitle({ id, reduced, children }) {
+  return (
+    <motion.h2
+      id={id}
+      className="sec-title"
+      initial={reduced ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
+      {children}
+      <motion.span
+        className="sec-line"
+        aria-hidden="true"
+        initial={reduced ? false : { scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.6, delay: 0.25, ease: 'easeOut' }}
+      />
+    </motion.h2>
+  )
+}
+
+/* ---------- Solutions: animated spotlight card ---------- */
+
+// motion.create on newer framer-motion, motion() on older versions
+const MotionLink = (motion.create || motion)(Link)
+
+function SolutionCard({ s, index, reduced }) {
+  const to = s.slug && solutionSlugs.has(s.slug) ? `/solutions/${s.slug}` : null
+  const cls = `bt${s.cls ? ` ${s.cls}` : ''}`
+
+  const handleMove = (e) => {
+    if (reduced) return
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+  }
+
+  const motionProps = {
+    className: cls,
+    onMouseMove: handleMove,
+    initial: reduced ? false : { opacity: 0, y: 28 },
+    whileInView: { opacity: 1, y: 0 },
+    whileHover: reduced ? undefined : { y: -4, transition: { duration: 0.2, delay: 0 } },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.55, delay: (index % 3) * 0.1, ease: 'easeOut' },
+  }
+
+  const body = (
+    <>
+      <s.icon aria-hidden="true" />
+      <h3>{s.title}</h3>
+      <p>{s.text}</p>
+      {s.check && (
+        <ul className="check">
+          {s.check.map((item) => (
+            <li key={item}>
+              <FaCheck aria-hidden="true" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  )
+
+  return to ? (
+    <MotionLink to={to} {...motionProps}>{body}</MotionLink>
+  ) : (
+    <motion.div {...motionProps}>{body}</motion.div>
+  )
+}
+
+/* ---------- Brands marquee ---------- */
+
+const rowA = brands.slice(0, 11)
+const rowB = brands.slice(11)
+
+function MarqueeRow({ items, reverse }) {
+  return (
+    <div className={`marquee${reverse ? ' rev' : ''}`}>
+      <div className="marquee-track">
+        {[0, 1].map((n) => (
+          <ul className="marquee-set" key={n} aria-hidden={n === 1 ? 'true' : undefined}>
+            {items.map((b) => <li key={b}>{b}</li>)}
+          </ul>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Who we serve ---------- */
+
+function ServeCard({ s, index, reduced }) {
+  const rx = useSpring(0, { stiffness: 200, damping: 20 })
+  const ry = useSpring(0, { stiffness: 200, damping: 20 })
+
+  const onMove = (e) => {
+    if (reduced) return
+    const r = e.currentTarget.getBoundingClientRect()
+    ry.set(((e.clientX - r.left) / r.width - 0.5) * 10)
+    rx.set(-((e.clientY - r.top) / r.height - 0.5) * 10)
+  }
+  const onLeave = () => {
+    rx.set(0)
+    ry.set(0)
+  }
+
+  return (
+    <motion.div
+      className="ac-card hover-card serve-tilt"
+      style={reduced ? undefined : { rotateX: rx, rotateY: ry, transformPerspective: 800 }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      initial={reduced ? false : { opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, delay: index * 0.12, ease: 'easeOut' }}
+    >
+      <div className="serve-img">
+        <img
+          src={s.img}
+          alt={s.alt}
+          width="640"
+          height="400"
+          loading="lazy"
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+        />
+      </div>
+      <div className="serve-body">
+        <s.icon className="chip" aria-hidden="true" />
+        <h3>{s.title}</h3>
+        <p>{s.text}</p>
+      </div>
+    </motion.div>
+  )
+}
+
+function LocationNote({ reduced }) {
+  return (
+    <motion.div
+      className="loc-note"
+      initial={reduced ? false : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
+      <span className="loc-pin" aria-hidden="true"><FaMapMarkerAlt /></span>
+      <p>
+        <strong>Based on Computer Street, Bur Dubai</strong>, and serving businesses across Dubai, Abu Dhabi and the UAE.
+      </p>
+      <a
+        className="loc-link"
+        href="https://www.google.com/maps/search/?api=1&query=Artek+Computers+Computer+Street+Bur+Dubai"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Get directions
+      </a>
+    </motion.div>
+  )
+}
+
 export default function Home() {
+  const reduced = useReducedMotion()
+
   return (
     <>
       <Seo
-        title="IT Solutions, CCTV and Networking in Dubai | Artek Computers LLC"
-        description="Artek Computers LLC is an IT integrated systems company in Dubai: computers, networking, CCTV, cabling, cloud, telephony and support for customers from residential to corporate."
+        title="IT Solutions, CCTV and Networking in Dubai | Artek Computers"
+        description="Artek Computers LLC is an IT integrated systems company in Dubai: computers, networking, CCTV, cabling and cloud, for customers from residential to corporate."
         path="/"
         jsonLd={[orgJsonLd, faqJsonLd]}
       />
+
+      {/* Hero */}
       <section className="hero">
+        <GlowBlobs reduced={reduced} />
         <div className="wrap">
           <div className="hero-in">
             <div>
-              <h1>IT solutions, CCTV and networking for businesses in Dubai</h1>
+              <h1>
+                {headlineWords.map((word, i) => (
+                  <Fragment key={`${word}-${i}`}>
+                    <motion.span
+                      className="word"
+                      custom={i}
+                      variants={wordVariants}
+                      initial={reduced ? false : 'hidden'}
+                      animate="visible"
+                    >
+                      {word}
+                    </motion.span>{' '}
+                  </Fragment>
+                ))}
+              </h1>
               <p className="lead">
                 Artek Computers LLC is an IT integrated systems company. We provide end-to-end solutions,
                 from computers and networks to CCTV, cabling and cloud, for customers from residential to corporate.
@@ -185,80 +402,69 @@ export default function Home() {
                 <Link className="btn outline" to="/contact">Request a free quote</Link>
               </div>
             </div>
-            <MonitorWall />
+            <HeroVisual reduced={reduced} />
           </div>
           <ul className="proof">
-            {proof.map((item) => (
-              <li key={item}>
+            {proof.map((item, i) => (
+              <motion.li
+                key={item}
+                custom={i}
+                variants={proofVariants}
+                initial={reduced ? false : 'hidden'}
+                animate="visible"
+              >
                 <FaCheck aria-hidden="true" />
                 {item}
-              </li>
+              </motion.li>
             ))}
           </ul>
         </div>
       </section>
 
+      {/* Solutions */}
       <section className="services" id="solutions">
         <div className="wrap">
-          <h2>Our IT and security solutions in Dubai</h2>
+          <SectionTitle reduced={reduced}>Our IT and security solutions in Dubai</SectionTitle>
           <div className="bento">
-            {solutions.map((s) => {
-              const to = s.slug && solutionSlugs.has(s.slug) ? `/solutions/${s.slug}` : null
-              const cls = `bt${s.cls ? ` ${s.cls}` : ''}`
-              const body = (
-                <>
-                  <s.icon aria-hidden="true" />
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                  {s.check && (
-                    <ul className="check">
-                      {s.check.map((item) => (
-                        <li key={item}>
-                          <FaCheck aria-hidden="true" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              )
-              return to
-                ? <Link key={s.title} to={to} className={cls}>{body}</Link>
-                : <div key={s.title} className={cls}>{body}</div>
-            })}
+            {solutions.map((s, i) => (
+              <SolutionCard key={s.title} s={s} index={i} reduced={reduced} />
+            ))}
           </div>
         </div>
       </section>
 
+      {/* Brands */}
       <section className="brands-home" aria-labelledby="brands-h">
         <div className="wrap">
-          <h2 id="brands-h">Authorized dealer of leading brands</h2>
+          <SectionTitle id="brands-h" reduced={reduced}>Authorized dealer of leading brands</SectionTitle>
           <p className="intro">We supply and support technology from the brands your business already trusts.</p>
-          <div className="brand-pills">
-            {brands.map((brand) => <span key={brand}>{brand}</span>)}
-          </div>
+        </div>
+        <div className="marquees">
+          <MarqueeRow items={rowA} />
+          <MarqueeRow items={rowB} reverse />
+        </div>
+        <div className="wrap">
           <p className="brands-more"><Link to="/brands">See all brands</Link></p>
         </div>
       </section>
+
+      {/* Who we serve */}
       <section className="serve" aria-labelledby="serve-h">
         <div className="wrap">
-          <h2 id="serve-h">Who we serve</h2>
+          <SectionTitle id="serve-h" reduced={reduced}>Who we serve</SectionTitle>
           <div className="ac-grid">
-            {serve.map((s) => (
-              <div className="ac-card hover-card" key={s.title}>
-                <s.icon className="chip" aria-hidden="true" />
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </div>
+            {serve.map((s, i) => (
+              <ServeCard key={s.title} s={s} index={i} reduced={reduced} />
             ))}
           </div>
-          <p className="serve-note">Based on Computer Street, Bur Dubai, and serving businesses across Dubai, Abu Dhabi and the UAE.</p>
+          <LocationNote reduced={reduced} />
         </div>
       </section>
 
+      {/* FAQ */}
       <section className="faq-sec" aria-labelledby="faq-h">
         <div className="wrap">
-          <h2 id="faq-h">Common questions</h2>
+          <SectionTitle id="faq-h" reduced={reduced}>Common questions</SectionTitle>
           <div className="faq">
             {faqs.map((f) => (
               <details key={f.q}>
@@ -270,9 +476,10 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Closing call to action */}
       <section className="closing">
         <div className="wrap">
-          <h2>Ready to talk about your IT or security needs?</h2>
+          <SectionTitle reduced={reduced}>Ready to talk about your IT or security needs?</SectionTitle>
           <p>Call us or send an enquiry. We will recommend the right solution and quote clearly.</p>
           <div className="hero-btns">
             <a className="btn white" href={PHONE_LINK}>Call {PHONE}</a>
