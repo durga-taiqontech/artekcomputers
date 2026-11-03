@@ -4,3 +4,6 @@ export const WHATSAPP = 'https://wa.me/971502236842'
 
 // Arabic company name (single source; render with .brand-ar).
 export const COMPANY_NAME_AR = 'أرتيك للكمبيوتر ش.ذ.م.م'
+
+// WhatsApp link with a pre-filled message. Built from WHATSAPP so the number stays in one place.
+export const whatsappLink = (text) => `${WHATSAPP}?text=${encodeURIComponent(String(text ?? ''))}`

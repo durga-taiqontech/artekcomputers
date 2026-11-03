@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { FaWhatsapp } from 'react-icons/fa'
+import { motion, useInView, useReducedMotion } from 'framer-motion'
+import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaTimes, FaWhatsapp } from 'react-icons/fa'
 import { WHATSAPP } from '../constants'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
@@ -45,6 +46,27 @@ const SERVICE_BY_SLUG = {
   'mobile-devices': 'Mobile devices',
   'audio-visual': 'Audio visual',
   cloud: 'Cloud computing',
+}
+
+// Maps ?category= (a product group title from the catalogue) to a service option.
+// Only clear matches are listed; anything else leaves the dropdown unselected.
+const SERVICE_BY_CATEGORY = {
+  'Copper cabling': 'Network Solutions',
+  'Fiber optic': 'Network Solutions',
+  'Specialty and ELV cables': 'ELV & Access Control',
+  Networking: 'Network Solutions',
+  Computers: 'Computer Systems',
+  'Telephony and displays': 'Voice & Telephony',
+}
+
+// Query values are untrusted: strip control and invisible direction characters, collapse spaces, cap at 120.
+function cleanParam(value) {
+  return String(value ?? '')
+    .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 120)
+    .trim()
 }
 
 const MAPS_LINK = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
@@ -144,17 +166,124 @@ function validate(f) {
   return errs
 }
 
+/* ---------- Visual helpers (no effect on what the form sends) ---------- */
+
+// Word-by-word reveal; the words stay real text inside the parent element.
+function RevealWords({ text, reduced, delay = 0, step = 0.08 }) {
+  return text.split(' ').map((word, i) => (
+    <Fragment key={`${word}-${i}`}>
+      <motion.span
+        className="ct-word"
+        initial={reduced ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: delay + i * step, duration: 0.5, ease: 'easeOut' }}
+      >
+        {word}
+      </motion.span>{' '}
+    </Fragment>
+  ))
+}
+
+// The live region always exists, so screen readers announce a message when it appears.
+function FieldError({ id, message, reduced }) {
+  return (
+    <div aria-live="polite">
+      {message && (
+        <motion.p
+          className="err"
+          id={id}
+          initial={reduced ? false : { opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {message}
+        </motion.p>
+      )}
+    </div>
+  )
+}
+
+function InfoGroup({ icon: Icon, label, index, reduced, children }) {
+  return (
+    <motion.div
+      className="ct-group"
+      initial={reduced ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.5, delay: index * 0.12, ease: 'easeOut' }}
+    >
+      <dt>
+        <span className="ct-chip" aria-hidden="true"><Icon /></span>
+        {label}
+      </dt>
+      <dd>{children}</dd>
+    </motion.div>
+  )
+}
+
+function SuccessPanel({ reduced, onReset }) {
+  return (
+    <motion.div
+      className="ct-success"
+      initial={reduced ? false : { opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
+      <svg className="ct-check" viewBox="0 0 52 52" aria-hidden="true" focusable="false">
+        <motion.circle
+          cx="26"
+          cy="26"
+          r="24"
+          fill="none"
+          stroke="#1e6bff"
+          strokeWidth="3"
+          initial={reduced ? false : { pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        />
+        <motion.path
+          d="M15 27l8 8 14-16"
+          fill="none"
+          stroke="#38d4ff"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={reduced ? false : { pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.45, delay: 0.5, ease: 'easeOut' }}
+        />
+      </svg>
+      <p className="ok" role="status">Thanks, we have received your enquiry. We will call you back within 1 hour during working hours.</p>
+      <button className="btn blue ct-again" type="button" onClick={onReset}>Send another enquiry</button>
+    </motion.div>
+  )
+}
+
 export default function Contact() {
-  const [searchParams] = useSearchParams()
-  const product = searchParams.get('product')?.trim()
-  const preset = SERVICE_BY_SLUG[searchParams.get('service')]
-  const [f, setF] = useState({
-    ...initial,
-    service: serviceOptions.some((o) => o.value === preset) ? preset : '',
-    message: product ? `I would like a quote for: ${product}.` : '',
+  const [searchParams, setSearchParams] = useSearchParams()
+  const product = cleanParam(searchParams.get('product'))
+  const category = cleanParam(searchParams.get('category'))
+
+  // Prefill is worked out once, on first load. It never overwrites what the visitor types.
+  const [prefill] = useState(() => {
+    const preset = SERVICE_BY_SLUG[searchParams.get('service')]
+    const fromCategory = Object.prototype.hasOwnProperty.call(SERVICE_BY_CATEGORY, category)
+      ? SERVICE_BY_CATEGORY[category]
+      : ''
+    const candidate = serviceOptions.some((o) => o.value === preset) ? preset : fromCategory
+    return {
+      service: serviceOptions.some((o) => o.value === candidate) ? candidate : '',
+      message: product
+        ? `I would like a quote for: ${product}${category ? ` (${category})` : ''}.`
+        : '',
+    }
   })
+  const [f, setF] = useState({ ...initial, service: prefill.service, message: prefill.message })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
+  const reduced = useReducedMotion()
+  const mapRef = useRef(null)
+  const mapInView = useInView(mapRef, { once: true })
   const aria = (key, err) => (err ? { 'aria-invalid': true, 'aria-describedby': `${key}-err` } : {})
 
   const set = (key) => (e) => {
@@ -181,6 +310,23 @@ export default function Contact() {
       }
       el.setSelectionRange(pos, pos)
     })
+  }
+
+  // Visual only: once a field has been touched (blurred), show its message using the same rules as submit.
+  const touch = (key) => () => {
+    const err = validate(f)[key]
+    setErrors((prev) => ({ ...prev, [key]: err }))
+  }
+
+  // Removes the quote request: clears the query and any prefill the visitor has not changed.
+  const clearQuote = () => {
+    setF((cur) => ({
+      ...cur,
+      message: cur.message === prefill.message ? '' : cur.message,
+      service: cur.service === prefill.service ? '' : cur.service,
+    }))
+    setErrors((cur) => ({ ...cur, message: undefined, service: undefined }))
+    setSearchParams({}, { replace: true })
   }
 
   async function submit(e) {
@@ -216,99 +362,139 @@ export default function Contact() {
       <div className="wrap">
         <div className="contact-in">
           <div>
-            <Breadcrumbs tone="dark" items={[{ name: 'Home', to: '/' }, { name: 'Contact Us' }]} />
-            <h1>Let&apos;s talk about your site</h1>
+            <motion.div
+              initial={reduced ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Breadcrumbs tone="dark" items={[{ name: 'Home', to: '/' }, { name: 'Contact Us' }]} />
+            </motion.div>
+            <h1><RevealWords text="Let's talk about your site" reduced={reduced} delay={0.15} /></h1>
+            <motion.span
+              className="ct-h1-line"
+              aria-hidden="true"
+              initial={reduced ? false : { scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.7, duration: 0.6, ease: 'easeOut' }}
+            />
             <p className="lead">Tell us what you need. We survey the site, quote clearly, and handle SIRA approval for you.</p>
-            <dl className="info">
-              <dt>Call</dt>
-              <dd>
+            <dl className="ct-info">
+              <InfoGroup icon={FaPhoneAlt} label="Call" index={0} reduced={reduced}>
                 <a href="tel:+97143797128">+971 4 379 7128</a><br />
                 <a href="tel:+97143797138">+971 4 379 7138</a><br />
                 <a href="tel:+971502236842">+971 50 223 6842</a>
-              </dd>
-              <dt>Email</dt>
-              <dd>
+              </InfoGroup>
+              <InfoGroup icon={FaEnvelope} label="Email" index={1} reduced={reduced}>
                 <a href="mailto:info@artekteam.com">info@artekteam.com</a><br />
                 <a href="mailto:sales@artekteam.com">sales@artekteam.com</a>
-              </dd>
-              <dt>Visit</dt>
-              <dd>P.O Box 112280, Al Rafa Road,<br />Computer Street, Bur Dubai, Dubai, UAE</dd>
+              </InfoGroup>
+              <InfoGroup icon={FaMapMarkerAlt} label="Visit" index={2} reduced={reduced}>
+                P.O Box 112280, Al Rafa Road,<br />Computer Street, Bur Dubai, Dubai, UAE
+              </InfoGroup>
             </dl>
-            <a className="btn blue wa-btn" href={WHATSAPP} target="_blank" rel="noreferrer">
+            <a className="btn blue wa-btn ct-wa" href={WHATSAPP} target="_blank" rel="noopener noreferrer">
               <FaWhatsapp aria-hidden="true" />
               Chat on WhatsApp
             </a>
           </div>
 
-          <form noValidate onSubmit={submit}>
-            <div className="field">
-              <label htmlFor="name">Full name</label>
-              <input id="name" name="name" autoComplete="name" value={f.name} onChange={set('name')} {...aria('name', errors.name)} />
-              {errors.name && <p className="err" id="name-err">{errors.name}</p>}
-            </div>
-
-            <div className="two">
-              <div className="field">
-                <label htmlFor="phone">Phone</label>
-                <div className="phone-wrap">
-                  <span className="phone-prefix" aria-hidden="true">+971</span>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel-national"
-                    placeholder="50 223 6842"
-                    value={f.phone}
-                    onChange={setPhone}
-                    {...aria('phone', errors.phone)}
-                  />
+          {status === 'sent' ? (
+            <SuccessPanel
+              reduced={reduced}
+              onReset={() => {
+                setErrors({})
+                setSearchParams({}, { replace: true }) // the quote request is done: no stale chip
+                setStatus('idle')
+              }}
+            />
+          ) : (
+            <form className="ct-form" noValidate onSubmit={submit} aria-busy={status === 'sending'}>
+              {product && (
+                <div className="pq-chip">
+                  <span className="pq-chip-text">Quote request for: {product}</span>
+                  <button
+                    type="button"
+                    className="pq-chip-x"
+                    onClick={clearQuote}
+                    aria-label={`Remove quote request for ${product}`}
+                  >
+                    <FaTimes aria-hidden="true" />
+                  </button>
                 </div>
-                {errors.phone && <p className="err" id="phone-err">{errors.phone}</p>}
-              </div>
+              )}
+
               <div className="field">
-                <label htmlFor="email">Email</label>
-                <input id="email" name="email" type="email" autoComplete="email" value={f.email} onChange={set('email')} {...aria('email', errors.email)} />
-                {errors.email && <p className="err" id="email-err">{errors.email}</p>}
+                <label htmlFor="name">Full name</label>
+                <input id="name" name="name" autoComplete="name" value={f.name} onChange={set('name')} onBlur={touch('name')} {...aria('name', errors.name)} />
+                <FieldError id="name-err" message={errors.name} reduced={reduced} />
               </div>
-            </div>
 
-            <div className="field">
-              <label htmlFor="service">Service needed</label>
-              <select id="service" name="service" value={f.service} onChange={set('service')} {...aria('service', errors.service)}>
-                <option value="" disabled>Select a service</option>
-                {serviceOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              {errors.service && <p className="err" id="service-err">{errors.service}</p>}
-            </div>
+              <div className="two">
+                <div className="field">
+                  <label htmlFor="phone">Phone</label>
+                  <div className="phone-wrap">
+                    <span className="phone-prefix" aria-hidden="true">+971</span>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      placeholder="50 223 6842"
+                      value={f.phone}
+                      onChange={setPhone}
+                      onBlur={touch('phone')}
+                      {...aria('phone', errors.phone)}
+                    />
+                  </div>
+                  <FieldError id="phone-err" message={errors.phone} reduced={reduced} />
+                </div>
+                <div className="field">
+                  <label htmlFor="email">Email</label>
+                  <input id="email" name="email" type="email" autoComplete="email" value={f.email} onChange={set('email')} onBlur={touch('email')} {...aria('email', errors.email)} />
+                  <FieldError id="email-err" message={errors.email} reduced={reduced} />
+                </div>
+              </div>
 
-            <div className="field">
-              <label htmlFor="message">How can we help?</label>
-              <textarea id="message" name="message" rows="4" value={f.message} onChange={set('message')} {...aria('message', errors.message)} />
-              {errors.message && <p className="err" id="message-err">{errors.message}</p>}
-            </div>
+              <div className="field">
+                <label htmlFor="service">Service needed</label>
+                <select id="service" name="service" value={f.service} onChange={set('service')} onBlur={touch('service')} {...aria('service', errors.service)}>
+                  <option value="" disabled>Select a service</option>
+                  {serviceOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+                <FieldError id="service-err" message={errors.service} reduced={reduced} />
+              </div>
 
-            <button className="btn blue" type="submit" disabled={status === 'sending'}>
-              {status === 'sending' ? 'Sending…' : 'Send enquiry'}
-            </button>
-            <p className="form-note">We will call you back within 1 hour during working hours.</p>
-            {status === 'sent' && (
-              <p className="ok" role="status">Thanks, we have received your enquiry. We will call you back within 1 hour during working hours.</p>
-            )}
-          </form>
+              <div className="field">
+                <label htmlFor="message">How can we help?</label>
+                <textarea id="message" name="message" rows="4" value={f.message} onChange={set('message')} onBlur={touch('message')} {...aria('message', errors.message)} />
+                <FieldError id="message-err" message={errors.message} reduced={reduced} />
+              </div>
+
+              <button className="btn blue ct-submit" type="submit" disabled={status === 'sending'}>
+                {status === 'sending' && <span className="ct-spinner" aria-hidden="true" />}
+                {status === 'sending' ? 'Sending…' : 'Send enquiry'}
+              </button>
+              <p className="form-note">We will call you back within 1 hour during working hours.</p>
+            </form>
+          )}
         </div>
 
-        <div className="map-card">
-          <iframe
-            className="map-frame"
-            src="https://www.google.com/maps?q=Artek+Computers+LLC+Computer+Street+Bur+Dubai&output=embed"
-            title="Map showing Artek Computers LLC on Computer Street, Bur Dubai"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+        <div className="map-card" ref={mapRef}>
+          {mapInView ? (
+            <iframe
+              className="map-frame"
+              src="https://www.google.com/maps?q=Artek+Computers+LLC+Computer+Street+Bur+Dubai&output=embed"
+              title="Map showing Artek Computers LLC on Computer Street, Bur Dubai"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          ) : (
+            <div className="map-frame ct-map-ph" aria-hidden="true" />
+          )}
           <div className="map-foot">
             <p>Artek Computers LLC, P.O Box 112280, Al Rafa Road, Computer Street, Bur Dubai, Dubai, UAE</p>
-            <a href={MAPS_LINK} target="_blank" rel="noreferrer">Get directions</a>
+            <a className="ct-dir" href={MAPS_LINK} target="_blank" rel="noopener noreferrer">Get directions</a>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { FaWhatsapp } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
-import { PHONE, PHONE_LINK } from '../constants'
+import { PHONE, PHONE_LINK, whatsappLink } from '../constants'
 import { productGroups, slugify } from '../data/catalog'
 
 const jsonLd = {
@@ -34,6 +35,9 @@ const jsonLd = {
 }
 
 export default function Products() {
+  const { pathname } = useLocation()
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+
   return (
     <>
       <Seo
@@ -67,14 +71,34 @@ export default function Products() {
             <h2 id={`${g.slug}-h`}><Link to={`/products/${g.slug}`}>{g.title}</Link></h2>
             <p className="cat-view"><Link to={`/products/${g.slug}`}>View {g.title}</Link></p>
             <div className="cat-grid">
-              {g.items.map((name) => (
-                <div className="ac-card hover-card cat-item" id={slugify(name)} key={name}>
-                  <h3>{name}</h3>
-                  <Link className="enq" to={`/contact?service=products&product=${encodeURIComponent(name)}`}>
-                    Enquire
-                  </Link>
-                </div>
-              ))}
+              {g.items.map((name) => {
+                const slug = slugify(name)
+                const waText = `Hi, I'm interested in ${name} (${g.title}). ${origin}${pathname}#${slug}`
+                return (
+                  <div className="ac-card hover-card cat-item pq-item" id={slug} key={name}>
+                    <h3>{name}</h3>
+                    <div className="pq-actions">
+                      <Link
+                        className="pq-btn pq-quote"
+                        to={`/contact?product=${encodeURIComponent(name)}&category=${encodeURIComponent(g.title)}`}
+                        rel="nofollow"
+                        aria-label={`Request a quote for ${name}`}
+                      >
+                        Get a quote
+                      </Link>
+                      <a
+                        className="pq-btn pq-wa"
+                        href={whatsappLink(waText)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Ask about ${name} on WhatsApp (opens in a new tab)`}
+                      >
+                        <FaWhatsapp aria-hidden="true" />
+                      </a>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>

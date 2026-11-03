@@ -1,7 +1,8 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { FaWhatsapp } from 'react-icons/fa'
 import Seo from '../components/Seo'
 import Breadcrumbs from '../components/Breadcrumbs'
-import { PHONE, PHONE_LINK } from '../constants'
+import { PHONE, PHONE_LINK, whatsappLink } from '../constants'
 import { brandGroups, productGroups, slugify } from '../data/catalog'
 import { solutions } from '../data/solutions'
 
@@ -51,6 +52,7 @@ function NotFound() {
 
 export default function ProductCategory() {
   const { group: groupSlug } = useParams()
+  const { pathname } = useLocation()
   const group = productGroups.find((g) => g.slug === groupSlug)
 
   if (!group) return <NotFound />
@@ -58,6 +60,7 @@ export default function ProductCategory() {
   const image = IMAGE_BY_SLUG[group.slug]
   const brandGroup = brandGroups.find((b) => b.title === group.brandGroupTitle)
   const relatedSolution = solutions.find((s) => s.slug === group.relatedSolution)
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
 
   const jsonLd = [
     {
@@ -125,14 +128,34 @@ export default function ProductCategory() {
           <h2 id="pcat-h" className="sr-only">{group.title} we supply</h2>
           <div className={image ? 'pcat-split' : 'pcat-full'}>
             <div className="pcat-items">
-              {group.items.map((name) => (
-                <div className="ac-card hover-card cat-item" id={slugify(name)} key={name}>
-                  <h3>{name}</h3>
-                  <Link className="enq" to={`/contact?service=products&product=${encodeURIComponent(name)}`}>
-                    Enquire
-                  </Link>
-                </div>
-              ))}
+              {group.items.map((name) => {
+                const slug = slugify(name)
+                const waText = `Hi, I'm interested in ${name} (${group.title}). ${origin}${pathname}#${slug}`
+                return (
+                  <div className="ac-card hover-card cat-item pq-item" id={slug} key={name}>
+                    <h3>{name}</h3>
+                    <div className="pq-actions">
+                      <Link
+                        className="pq-btn pq-quote"
+                        to={`/contact?product=${encodeURIComponent(name)}&category=${encodeURIComponent(group.title)}`}
+                        rel="nofollow"
+                        aria-label={`Request a quote for ${name}`}
+                      >
+                        Get a quote
+                      </Link>
+                      <a
+                        className="pq-btn pq-wa"
+                        href={whatsappLink(waText)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Ask about ${name} on WhatsApp (opens in a new tab)`}
+                      >
+                        <FaWhatsapp aria-hidden="true" />
+                      </a>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
             {image && (
               <figure className="sol-photo pcat-photo">

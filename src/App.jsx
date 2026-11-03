@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { FaWhatsapp } from 'react-icons/fa'
 import Header from './components/Header'
 import Footer from './components/Footer'
@@ -10,8 +10,12 @@ import Brands from './pages/Brands'
 import Solution from './pages/Solution'
 import Solutions from './pages/Solutions'
 import ProductCategory from './pages/ProductCategory'
+import NotFound from './pages/NotFound'
 import ScrollToHash from './components/ScrollToHash'
 import { WHATSAPP } from './constants'
+
+// /elv-access-control used to be a client-side <Navigate>. It is now a real
+// 301 in src/seo/redirects.js, which search engines follow without running JS.
 
 export default function App() {
   return (
@@ -23,12 +27,12 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/company" element={<Company />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/elv-access-control" element={<Navigate to="/solutions/elv-access-control" replace />} />
           <Route path="/products" element={<Products />} />
           <Route path="/brands" element={<Brands />} />
           <Route path="/products/:group" element={<ProductCategory />} />
           <Route path="/solutions/:slug" element={<Solution />} />
           <Route path="/solutions" element={<Solutions />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />

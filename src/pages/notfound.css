@@ -1,0 +1,41 @@
+/* Scoped to the 404 page. Colors and fonts are inherited from the site, so
+   adjust spacing here if it feels off next to your other pages. */
+.nf {
+  padding: clamp(3rem, 10vw, 7rem) 1.25rem;
+}
+
+.nf__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.nf h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.nf p {
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+}
+
+.nf__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nf__links a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.nf__links a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
